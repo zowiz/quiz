@@ -440,6 +440,19 @@
       font-weight: 900;
     }
 
+    .handle {
+      align-self: center;
+      margin-top: 8px;
+      background: rgba(255,255,255,.7);
+      border: 2px solid #000;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .18em;
+      opacity: .7;
+    }
+
     .how {
       background: #FFE55C;
     }
@@ -507,8 +520,10 @@
         question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
         answer: "ECHO",
         timerSeconds: 15,
+        riddleNumber: "001",
         brand: "RIDDLES",
         creator: "by ZEUX",
+        handle: "@ZEUX.RIDDLES",
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
       };
 
@@ -603,6 +618,10 @@
 
             <div class="riddle-area">
               <button class="riddle-card" id="riddleCard">
+                <div class="riddle-tags">
+                  <span class="tag tag-black">RIDDLE #<span id="numberText"></span></span>
+                  <span class="tag tag-purple">VIRAL</span>
+                </div>
 
                 <p class="question" id="questionText"></p>
                 <div class="tap-hint">👆 TAP TO REVEAL ANSWER</div>
@@ -625,7 +644,7 @@
               </div>
             </div>
 
-            <div class="follow">▶ FOLLOW FOR MORE RIDDLES 🚀</div>
+            <div class="follow">▶ SUBSCRIBE FOR MORE RIDDLES 🚀</div>
             <div class="handle"><span id="handleText"></span> • 9:16 TEMPLATE</div>
           </div>
         </div>
