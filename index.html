@@ -511,7 +511,7 @@
                   <span class="hint-label">💡 HINT 1</span>
                   <span id="hintText"></span>
                 </div>
-                <div class="hint" id="hintBox2">
+                <div class="hint" id="hintBox2" style="display:none;">
                   <span class="hint-label">💡 HINT 2</span>
                   <span id="hintText2"></span>
                 </div>
@@ -665,6 +665,7 @@
             hintVisible = true;
             timerPhase = "hint";
             timeLeft = CONFIG.hintTimerSeconds;
+            $("hintBox2").style.display = "flex";
             updatePreview();
             $("hintBox").classList.remove("reveal");
             void $("hintBox").offsetWidth;
@@ -689,7 +690,7 @@
       hint2Visible = false;
       timerPhase = "initial";
       timeLeft = CONFIG.timerSeconds;
-      hint2Visible = false;
+      $("hintBox2").style.display = "none";
       timerRunning = false;
       clearInterval(timerId);
       updatePreview();
