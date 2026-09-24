@@ -472,6 +472,8 @@
     let timeLeft = CONFIG.timerSeconds;
     let revealed = false;
     let timerRunning = false;
+    let firstLetterRevealed = false;
+    let timerPhase = "initial";
     let timerId = null;
 
     const $ = (id) => document.getElementById(id);
@@ -512,9 +514,13 @@
         tile.className = "tile";
 
         if (/^[A-Z]$/i.test(letter) && !revealed) {
-          tile.textContent = "?";
-          tile.style.color = "rgba(0,0,0,.2)";
-          tile.style.fontSize = "16px";
+          if (firstLetterRevealed && index === 0) {
+            tile.textContent = letter;
+          } else {
+            tile.textContent = "?";
+            tile.style.color = "rgba(0,0,0,.2)";
+            tile.style.fontSize = "16px";
+          }
         } else {
           tile.textContent = letter;
         }
@@ -542,32 +548,44 @@
 
     function startTimer() {
       if (timerRunning || revealed) return;
-
       clearInterval(timerId);
       timerRunning = true;
-
       timerId = setInterval(() => {
         if (!timerRunning || revealed) return;
-
         if (timeLeft <= 0) {
-          reveal();
+          if (timerPhase === "initial") {
+            firstLetterRevealed = true;
+            timerPhase = "second";
+            timeLeft = 10;
+            updatePreview();
+          } else {
+            reveal();
+          }
           return;
         }
-
         timeLeft--;
         updatePreview();
-
-        if (timeLeft <= 0) reveal();
+        if (timeLeft <= 0) {
+          if (timerPhase === "initial") {
+            firstLetterRevealed = true;
+            timerPhase = "second";
+            timeLeft = 10;
+            updatePreview();
+          } else {
+            reveal();
+          }
+        }
       }, 1000);
     }
-
     function resetTimer() {
       revealed = false;
+      firstLetterRevealed = false;
+      timerPhase = "initial";
       timeLeft = CONFIG.timerSeconds;
-      startTimer();
+      timerRunning = false;
+      clearInterval(timerId);
       updatePreview();
     }
-
     function reveal() {
       revealed = true;
       timerRunning = false;
