@@ -434,10 +434,10 @@
               </button>
             </div>
 
-            <div class="timer" id="timer">
+            <button class="timer" id="timer" type="button" aria-label="Start timer">
               <span id="timerEmoji">😎</span>
               <span id="timerText">15s</span>
-            </div>
+            </button>
 
             <div class="answer-header">
               <span class="answer-count">ANSWER • <span id="letterCount">0</span> LETTERS</span>
@@ -471,7 +471,7 @@
     let answer = CONFIG.answer.toUpperCase();
     let timeLeft = CONFIG.timerSeconds;
     let revealed = false;
-    let timerRunning = true;
+    let timerRunning = false;
     let timerId = null;
 
     const $ = (id) => document.getElementById(id);
@@ -541,6 +541,8 @@
     }
 
     function startTimer() {
+      if (timerRunning || revealed) return;
+
       clearInterval(timerId);
       timerRunning = true;
 
@@ -583,6 +585,15 @@
 
     $("riddleCard").onclick = toggleReveal;
 
+    $("timer").onclick = () => {
+      if (revealed) {
+        resetTimer();
+      } else if (!timerRunning) {
+        startTimer();
+        updatePreview();
+      }
+    };
+
     $("fullscreenBtn").onclick = async () => {
       try {
         if (!document.fullscreenElement) {
@@ -596,7 +607,6 @@
     };
 
     updatePreview();
-    startTimer();
   </script>
 </body>
 </html>
