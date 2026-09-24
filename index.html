@@ -288,6 +288,8 @@
       }
     }
 
+    .hint + .hint { margin-top: 6px; }
+
     .hint-label {
       font-family: Nunito, sans-serif;
       font-size: 12px;
@@ -506,8 +508,12 @@
                 <p class="question" id="questionText"></p>
 
                 <div class="hint" id="hintBox">
-                  <span class="hint-label">💡 HINT</span>
+                  <span class="hint-label">💡 HINT 1</span>
                   <span id="hintText"></span>
+                </div>
+                <div class="hint" id="hintBox2">
+                  <span class="hint-label">💡 HINT 2</span>
+                  <span id="hintText2"></span>
                 </div>
 
                 <div class="progress">
@@ -566,7 +572,10 @@
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
       $("hintText").textContent = hintVisible
-        ? (hint2Visible ? CONFIG.hint2 : CONFIG.hint)
+        ? CONFIG.hint
+        : "Hint coming in " + timeLeft + "s";
+      $("hintText2").textContent = hint2Visible
+        ? CONFIG.hint2
         : "Hint coming in " + timeLeft + "s";
       
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
@@ -665,9 +674,9 @@
             timerPhase = "hint2";
             timeLeft = CONFIG.hint2TimerSeconds;
             updatePreview();
-            $("hintBox").classList.remove("reveal");
-            void $("hintBox").offsetWidth;
-            $("hintBox").classList.add("reveal");
+            $("hintBox2").classList.remove("reveal");
+            void $("hintBox2").offsetWidth;
+            $("hintBox2").classList.add("reveal");
           } else {
             reveal();
           }
