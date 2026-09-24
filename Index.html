@@ -395,25 +395,25 @@
 
     .confetti {
       position: absolute;
-      top: -24px;
+      bottom: -24px;
       width: 12px;
       height: 20px;
       z-index: 20;
       pointer-events: none;
       border: 2px solid #000;
-      animation: confetti-fall 3.2s ease-out forwards;
+      animation: confetti-fall 1.4s ease-out forwards;
     }
 
     @keyframes confetti-fall {
       0% {
         transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-        opacity: 1;
+        opacity: 0;
       }
-      15% {
+      12% {
         opacity: 1;
       }
       100% {
-        transform: translate3d(var(--confetti-x), 680px, 0) rotate(var(--confetti-rotate)) scale(.8);
+        transform: translate3d(var(--confetti-x), -680px, 0) rotate(var(--confetti-rotate)) scale(.8);
         opacity: 0;
       }
     }
@@ -665,7 +665,7 @@
         piece.style.setProperty("--confetti-rotate", ((Math.random() - 0.5) * 720) + "deg");
         piece.style.animationDelay = (Math.random() * 0.25) + "s";
         quiz.appendChild(piece);
-        setTimeout(() => piece.remove(), 3600);
+        setTimeout(() => piece.remove(), 1800);
       }
     }
 
