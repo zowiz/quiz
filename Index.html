@@ -604,24 +604,19 @@
                 <span class="logo-by" id="creatorText"></span>
                 <span>🧩</span>
               </div>
-
-              <div style="display:flex;align-items:center">
-                <div class="timer" id="timer">
-                  <span id="timerEmoji">😎</span>
-                  <span id="timerText">15s</span>
-                </div>
-                <button class="fullscreen" id="fullscreenBtn">⛶</button>
-              </div>
             </div>
 
             <div class="solve-badge">⚡ CAN YOU SOLVE IT? 🔥</div>
 
+            <div style="display:flex;align-items:center">
+                <div class="timer" id="timer">
+                  <span id="timerEmoji">😎</span>
+                  <span id="timerText">15s</span>
+                </div>
+            </div>
+
             <div class="riddle-area">
               <button class="riddle-card" id="riddleCard">
-                <div class="riddle-tags">
-                  <span class="tag tag-black">RIDDLE #<span id="numberText"></span></span>
-                  <span class="tag tag-purple">VIRAL</span>
-                </div>
 
                 <p class="question" id="questionText"></p>
                 <div class="tap-hint">👆 TAP TO REVEAL ANSWER</div>
@@ -710,7 +705,6 @@
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
       $("handleText").textContent = CONFIG.handle;
-      $("numberText").textContent = CONFIG.riddleNumber;
       $("questionText").textContent = question;
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent = revealed ? "REVEALED" : "HIDDEN";
@@ -861,14 +855,6 @@
     $("mobileResetBtn").onclick = resetTimer;
     $("revealBtn").onclick = toggleReveal;
     $("riddleCard").onclick = toggleReveal;
-
-    $("fullscreenBtn").onclick = () => {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        $("quiz").requestFullscreen();
-      }
-    };
 
     $("mobileEditBtn").onclick = () => {
       const editor = $("mobileEditor");
