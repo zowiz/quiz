@@ -371,6 +371,27 @@
       font-weight: 900;
     }
 
+    .confetti {
+      position: absolute;
+      top: -20px;
+      width: 10px;
+      height: 16px;
+      z-index: 20;
+      pointer-events: none;
+      animation: confetti-fall 1.8s ease-out forwards;
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translate3d(var(--confetti-x), 680px, 0) rotate(var(--confetti-rotate));
+        opacity: 0;
+      }
+    }
+
     @keyframes bounce {
       50% { transform: scale(1.08); }
     }
@@ -593,11 +614,32 @@
       clearInterval(timerId);
       updatePreview();
     }
+    function launchConfetti() {
+      const quiz = $("quiz");
+      const colors = CONFIG.colors;
+      const pieces = 45;
+
+      document.querySelectorAll(".confetti").forEach((piece) => piece.remove());
+
+      for (let i = 0; i < pieces; i++) {
+        const piece = document.createElement("div");
+        piece.className = "confetti";
+        piece.style.left = (8 + Math.random() * 84) + "%";
+        piece.style.background = colors[i % colors.length];
+        piece.style.setProperty("--confetti-x", ((Math.random() - 0.5) * 220) + "px");
+        piece.style.setProperty("--confetti-rotate", ((Math.random() - 0.5) * 720) + "deg");
+        piece.style.animationDelay = (Math.random() * 0.25) + "s";
+        quiz.appendChild(piece);
+        setTimeout(() => piece.remove(), 2200);
+      }
+    }
+
     function reveal() {
       revealed = true;
       timerRunning = false;
       clearInterval(timerId);
       updatePreview();
+      launchConfetti();
     }
 
     function toggleReveal() {
