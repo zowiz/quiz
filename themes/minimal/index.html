@@ -1,67 +1,705 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zeux Riddles — Minimal</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
-:root{--bg:#f7f3ee;--card:#fffdf9;--text:#202020;--muted:#77716a;--line:#ddd4c8;--accent:#6c63ff;--soft:#f1ece5;--accent-soft:#e9e6ff}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,sans-serif;background:#fff;color:var(--text)}
-button,input,textarea{font:inherit}button{cursor:pointer}.app{position:relative;isolation:isolate;min-height:100vh;display:grid;place-items:center;padding:24px 12px;overflow:hidden;background:#fff}
-.app::before,.app::after{content:"";position:fixed;pointer-events:none;z-index:-1;border:2px solid transparent;border-radius:50%}
-.app::before{width:760px;height:360px;left:-230px;top:8%;border-color:rgba(244,114,182,.16);transform:rotate(-13deg);box-shadow:0 72px 0 -1px rgba(96,165,250,.12),0 144px 0 -1px rgba(74,222,128,.10)}
-.app::after{width:720px;height:330px;right:-250px;bottom:8%;border-color:rgba(96,165,250,.14);transform:rotate(14deg);box-shadow:0 -70px 0 -1px rgba(74,222,128,.11),0 -140px 0 -1px rgba(244,114,182,.10)}
-.quiz{position:relative;width:360px;max-width:92vw;aspect-ratio:9/16;background:#fff;border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 18px 45px rgba(0,0,0,.08)}
-.quiz-content{height:100%;padding:18px;display:flex;flex-direction:column}.top-row{display:flex;align-items:center}.logo{display:flex;align-items:center;gap:7px;font-weight:800;letter-spacing:-.03em}
-.logo-main{font-size:18px;color:var(--accent)}.logo-by{font-size:10px;color:var(--muted);font-weight:700}
-.fullscreen{position:absolute;top:16px;right:16px;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--accent);font-size:15px}
-.riddle-area{flex:1;display:flex;align-items:center}.riddle-card{position:relative;width:100%;text-align:left;background:#f0edff;border:1px solid #d9d1eb;border-radius:18px;padding:30px 18px 0;cursor:pointer;overflow:visible}.riddle-card:hover{border-color:#bbb}
-.solve-overlay{position:absolute;z-index:5;top:0;left:50%;transform:translate(-50%,-50%);display:block;white-space:nowrap;margin:0;padding:8px 15px;border-radius:999px;background:#e5484d;color:#fff;font-size:12px;letter-spacing:.1em;font-weight:900;line-height:1.2;box-shadow:none;animation:hookIn .65s cubic-bezier(.2,.9,.2,1) both}
-.question{position:relative;z-index:2;font-size:21px;line-height:1.3;margin:0;animation:questionIn .55s .12s cubic-bezier(.2,.9,.2,1) both}
-.hint{position:relative;z-index:2;display:flex;align-items:flex-start;gap:7px;margin-top:14px;font-size:12px;line-height:1.45;color:#555;font-weight:600}.hint + .hint{margin-top:7px}.hint-label{font-size:11px}
-.progress{position:relative;z-index:2;height:5px;width:calc(100% - 28px);margin:18px auto 0;background:#ddd8d0;overflow:hidden;border-radius:0 0 6px 6px}.progress-bar{height:100%;width:100%;background:var(--accent);transition:width 1s linear}
-.timer{align-self:center;display:flex;align-items:center;gap:8px;margin:16px auto 18px;border:1px solid #d8d0f0;border-radius:999px;background:var(--accent-soft);padding:8px 18px;color:var(--accent);font-size:23px;font-weight:800}.timer:focus,.timer:focus-visible,.timer:active{outline:none}.timer.danger{animation:pulse .5s infinite}
-.answer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.08em}.answer-box{border-top:1px solid var(--line);padding-top:12px}.tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}
-.tile{width:31px;height:42px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;background:#fafaf8;font-size:17px;font-weight:800}.tile.revealed{background:var(--accent);color:#fff;border-color:var(--accent);animation:pop .35s both}
-.answer-reveal{justify-content:center;margin-top:10px}.answer-reveal span{font-size:11px;font-weight:800;color:var(--muted)}.follow{align-self:center;margin-top:18px;color:var(--accent);font-size:9px;font-weight:700;letter-spacing:.08em}
-.modal-backdrop{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,20,20,.45)}.modal-backdrop.open{display:flex}.riddle-form{width:min(420px,100%);max-height:90vh;overflow:auto;background:#fff;border:1px solid #ddd;border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.18)}
-.riddle-form h2{margin:0 0 18px;font-size:20px}.form-field{margin-bottom:12px}.form-field label{display:block;margin-bottom:6px;font-size:10px;font-weight:800;letter-spacing:.08em;color:#666}.form-field textarea,.form-field input{width:100%;border:1px solid #d8d8d2;border-radius:10px;padding:10px;background:#fafaf8;color:#171717;font-size:13px;outline:none;resize:vertical}.form-field textarea:focus,.form-field input:focus{border-color:#999;background:#fff}.form-actions{display:flex;gap:8px;margin-top:16px}.form-actions button{flex:1;border:1px solid #ccc;border-radius:10px;padding:10px;font-size:12px;font-weight:800}.cancel-btn{background:#fff;color:#555}.submit-btn{background:#171717;color:#fff;border-color:#171717!important}
-.confetti{position:absolute;bottom:-15px;width:7px;height:14px;z-index:20;pointer-events:none;background:#171717;animation:fall 1s ease-out forwards}
-@keyframes fall{0%{transform:translate3d(0,0,0) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate3d(var(--x),-620px,0) rotate(var(--r));opacity:0}}
-@keyframes pulse{50%{transform:scale(1.05)}}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.08)}100%{transform:scale(1)}}@keyframes hookIn{0%{opacity:0;transform:translate(-50%,-50%) translateY(12px) scale(.85)}65%{opacity:1;transform:translate(-50%,-50%) translateY(-2px) scale(1.03)}100%{transform:translate(-50%,-50%) translateY(0) scale(1)}}@keyframes questionIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}@keyframes reveal{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}.hint.reveal{animation:reveal .45s ease both}
-@media (prefers-reduced-motion:reduce){.solve-overlay,.question{animation:none}}
-</style>
-</head>
-<body>
-<div class="app"><main class="quiz" id="quiz"><div class="quiz-content">
-<div class="top-row"><div class="logo"><span class="logo-main" id="brandText"></span><span class="logo-by" id="creatorText"></span></div></div>
-<button class="fullscreen" id="fullscreenBtn" aria-label="Fullscreen">⛶</button>
-<div class="riddle-area"><button class="riddle-card" id="riddleCard">
-<span class="solve-overlay">CAN YOU SOLVE IT?</span><p class="question" id="questionText"></p>
-<div class="hint" id="hintBox"><span class="hint-label">💡</span><span id="hintText"></span></div>
-<div class="hint" id="hintBox2" style="display:none"><span class="hint-label">💡</span><span id="hintText2"></span></div>
-<div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-</button></div>
-<button class="timer" id="timer" type="button"><span id="timerEmoji">😎</span><span id="timerText">10s</span></button>
-<div class="answer-header"><span>ANSWER • <span id="letterCount">0</span> LETTERS</span><span id="statusText">HIDDEN</span></div>
-<div class="answer-box"><div class="tiles" id="tiles"></div><div class="answer-reveal" id="answerReveal" style="display:none"><span id="revealedAnswer"></span></div></div>
-<div class="follow">RIDDLES BY ZEUX</div></div></main></div>
-<div class="modal-backdrop" id="riddleModal"><form class="riddle-form" id="riddleForm"><h2>Edit Riddle</h2>
-<div class="form-field"><label for="riddleInput">1. RIDDLE</label><textarea id="riddleInput" rows="4" required></textarea></div><div class="form-field"><label for="hint1Input">2. HINT 1</label><textarea id="hint1Input" rows="2" required></textarea></div><div class="form-field"><label for="hint2Input">3. HINT 2</label><textarea id="hint2Input" rows="2" required></textarea></div><div class="form-field"><label for="answerInput">4. ANSWER</label><input id="answerInput" required></div>
-<div class="form-actions"><button type="button" class="cancel-btn" id="cancelRiddle">CANCEL</button><button type="submit" class="submit-btn">SUBMIT</button></div></form></div>
-<script>
-const CONFIG={question:"What has many teeth but cannot bite?",hint:"You might use me in the morning.",hint2:"I have many teeth arranged in a row.",answer:"comb",timerSeconds:10,hintTimerSeconds:5,hint2TimerSeconds:10,brand:"RIDDLES",creator:"by ZEUX"};
-let question=CONFIG.question,answer=CONFIG.answer.toUpperCase(),timeLeft=CONFIG.timerSeconds,revealed=false,timerRunning=false,hintVisible=false,hint2Visible=false,timerPhase="initial",timerId=null;const $=id=>document.getElementById(id);
-function updatePreview(){$("brandText").textContent=CONFIG.brand;$("creatorText").textContent=CONFIG.creator;$("questionText").textContent=question;$("hintText").textContent=hintVisible?CONFIG.hint:"Hint coming in 10s";$("hintText2").textContent=hint2Visible?CONFIG.hint2:"Hint coming in 5s";$("letterCount").textContent=answer.replace(/\s/g,"").length;$("statusText").textContent=revealed?"REVEALED":hint2Visible?"HINT 2":hintVisible?"HINT 1":"HIDDEN";$("timerText").textContent=revealed?"Time's up!":timeLeft+"s";$("timerEmoji").textContent=getTimerEmoji();const d=timerPhase==="initial"?CONFIG.timerSeconds:timerPhase==="hint"?CONFIG.hintTimerSeconds:CONFIG.hint2TimerSeconds;$("progressBar").style.width=Math.max(0,timeLeft/d*100)+"%";$("timer").classList.toggle("danger",timeLeft<=5&&timerRunning&&!revealed);renderTiles()}
-function renderTiles(){const t=$("tiles");t.innerHTML="";[...answer].forEach(l=>{if(l===" "){const s=document.createElement("div");s.style.width="12px";t.appendChild(s);return}const x=document.createElement("div");x.className="tile";x.textContent=revealed?l:"?";if(!revealed)x.style.color="#bbb";else x.classList.add("revealed");t.appendChild(x)});$("answerReveal").style.display=revealed?"flex":"none";$("revealedAnswer").textContent=answer}
-function getTimerEmoji(){if(timerPhase==="initial"){if(timeLeft>7)return"😎";if(timeLeft>4)return"😬";if(timeLeft>2)return"😰";return"🤯"}return timeLeft>2?"💡":"⏳"}
-function startTimer(){if(timerRunning||revealed)return;clearInterval(timerId);timerRunning=true;timerId=setInterval(()=>{if(!timerRunning||revealed)return;timeLeft--;updatePreview();if(timeLeft<=0){if(timerPhase==="initial"){hintVisible=true;timerPhase="hint";timeLeft=CONFIG.hintTimerSeconds;$("hintBox2").style.display="flex";updatePreview();$("hintBox").classList.remove("reveal");void $("hintBox").offsetWidth;$("hintBox").classList.add("reveal")}else if(timerPhase==="hint"){hint2Visible=true;timerPhase="hint2";timeLeft=CONFIG.hint2TimerSeconds;updatePreview();$("hintBox2").classList.remove("reveal");void $("hintBox2").offsetWidth;$("hintBox2").classList.add("reveal")}else reveal()}},1000)}
-function resetTimer(){revealed=false;hintVisible=false;hint2Visible=false;timerPhase="initial";timeLeft=CONFIG.timerSeconds;$("hintBox2").style.display="none";timerRunning=false;clearInterval(timerId);updatePreview()}
-function reveal(){revealed=true;timerRunning=false;clearInterval(timerId);updatePreview();launchConfetti()}
-function launchConfetti(){const q=$("quiz");const colors=["#FFE55C","#EF4444","#38BDF8","#4ADE80"];for(let i=0;i<45;i++){const p=document.createElement("div");p.className="confetti";p.style.left=8+Math.random()*84+"%";p.style.background=colors[i%colors.length];p.style.setProperty("--x",(Math.random()-.5)*280+"px");p.style.setProperty("--r",(Math.random()-.5)*720+"deg");p.style.animationDelay=Math.random()*.2+"s";q.appendChild(p);setTimeout(()=>p.remove(),1200)}}
-function openRiddleForm(){$("riddleInput").value=CONFIG.question;$("hint1Input").value=CONFIG.hint;$("hint2Input").value=CONFIG.hint2;$("answerInput").value=CONFIG.answer;$("riddleModal").classList.add("open")}function closeRiddleForm(){$("riddleModal").classList.remove("open")}
-$("riddleCard").onclick=e=>{e.preventDefault();openRiddleForm()};$("cancelRiddle").onclick=closeRiddleForm;$("riddleModal").onclick=e=>{if(e.target===$("riddleModal"))closeRiddleForm()};$("riddleForm").onsubmit=e=>{e.preventDefault();CONFIG.question=$("riddleInput").value.trim();CONFIG.hint=$("hint1Input").value.trim();CONFIG.hint2=$("hint2Input").value.trim();CONFIG.answer=$("answerInput").value.trim();question=CONFIG.question;answer=CONFIG.answer.toUpperCase();resetTimer();closeRiddleForm()};$("timer").onclick=()=>{if(revealed)resetTimer();else if(!timerRunning)startTimer()};$("fullscreenBtn").onclick=async()=>{try{if(!document.fullscreenElement)await $("quiz").requestFullscreen();else await document.exitFullscreen()}catch(e){}};updatePreview();
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zeux Riddles — Minimal</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap");
+      :root {
+        --bg: #f7f3ee;
+        --card: #fffdf9;
+        --text: #202020;
+        --muted: #77716a;
+        --line: #ddd4c8;
+        --accent: #6c63ff;
+        --soft: #f1ece5;
+        --accent-soft: #e9e6ff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: Inter, system-ui, sans-serif;
+        background: #fff;
+        color: var(--text);
+      }
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      .app {
+        position: relative;
+        isolation: isolate;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+      .app::before,
+      .app::after {
+        content: "";
+        position: fixed;
+        pointer-events: none;
+        z-index: -1;
+        border: 2px solid transparent;
+        border-radius: 50%;
+      }
+      .app::before {
+        width: 760px;
+        height: 360px;
+        left: -230px;
+        top: 8%;
+        border-color: rgba(244, 114, 182, 0.16);
+        transform: rotate(-13deg);
+        box-shadow:
+          0 72px 0 -1px rgba(96, 165, 250, 0.12),
+          0 144px 0 -1px rgba(74, 222, 128, 0.1);
+      }
+      .app::after {
+        width: 720px;
+        height: 330px;
+        right: -250px;
+        bottom: 8%;
+        border-color: rgba(96, 165, 250, 0.14);
+        transform: rotate(14deg);
+        box-shadow:
+          0 -70px 0 -1px rgba(74, 222, 128, 0.11),
+          0 -140px 0 -1px rgba(244, 114, 182, 0.1);
+      }
+      .quiz {
+        position: relative;
+        width: 360px;
+        max-width: 92vw;
+        aspect-ratio: 9/16;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+      }
+      .quiz-content {
+        height: 100%;
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+      }
+      .top-row {
+        display: flex;
+        align-items: center;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+      .logo-main {
+        font-size: 18px;
+        color: var(--accent);
+      }
+      .logo-by {
+        font-size: 10px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+      .fullscreen {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: var(--card);
+        color: var(--accent);
+        font-size: 15px;
+      }
+      .riddle-area {
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+      .riddle-card {
+        position: relative;
+        width: 100%;
+        text-align: left;
+        background: #f0edff;
+        border: 1px solid #d9d1eb;
+        border-radius: 18px;
+        padding: 30px 18px 0;
+        cursor: pointer;
+        overflow: visible;
+      }
+      .riddle-card:hover {
+        border-color: #bbb;
+      }
+      .solve-overlay {
+        position: absolute;
+        z-index: 5;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: block;
+        white-space: nowrap;
+        margin: 0;
+        padding: 8px 15px;
+        border-radius: 999px;
+        background: #e5484d;
+        color: #fff;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        font-weight: 900;
+        line-height: 1.2;
+        box-shadow: none;
+        animation: hookIn 0.65s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+      }
+      .question {
+        position: relative;
+        z-index: 2;
+        font-size: 21px;
+        line-height: 1.3;
+        margin: 0;
+        animation: questionIn 0.55s 0.12s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+      }
+      .hint {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: flex-start;
+        gap: 7px;
+        margin-top: 14px;
+        font-size: 12px;
+        line-height: 1.45;
+        color: #555;
+        font-weight: 600;
+      }
+      .hint + .hint {
+        margin-top: 7px;
+      }
+      .hint-label {
+        font-size: 11px;
+      }
+      .progress {
+        position: relative;
+        z-index: 2;
+        height: 5px;
+        width: calc(100% - 28px);
+        margin: 18px auto 0;
+        background: #ddd8d0;
+        overflow: hidden;
+        border-radius: 0 0 6px 6px;
+      }
+      .progress-bar {
+        height: 100%;
+        width: 100%;
+        background: var(--accent);
+        transition: width 1s linear;
+      }
+      .timer {
+        align-self: center;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 16px auto 18px;
+        border: 1px solid #d8d0f0;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        padding: 8px 18px;
+        color: var(--accent);
+        font-size: 23px;
+        font-weight: 800;
+      }
+      .timer:focus,
+      .timer:focus-visible,
+      .timer:active {
+        outline: none;
+      }
+      .timer.danger {
+        animation: pulse 0.5s infinite;
+      }
+      .answer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        color: var(--muted);
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+      }
+      .answer-box {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+      }
+      .tiles {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 5px;
+      }
+      .tile {
+        width: 31px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fafaf8;
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .tile.revealed {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+        animation: pop 0.35s both;
+      }
+      .answer-reveal {
+        justify-content: center;
+        margin-top: 10px;
+      }
+      .answer-reveal span {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--muted);
+      }
+      .follow {
+        align-self: center;
+        margin-top: 18px;
+        color: var(--accent);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(20, 20, 20, 0.45);
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .riddle-form {
+        width: min(420px, 100%);
+        max-height: 90vh;
+        overflow: auto;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+      }
+      .riddle-form h2 {
+        margin: 0 0 18px;
+        font-size: 20px;
+      }
+      .form-field {
+        margin-bottom: 12px;
+      }
+      .form-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #666;
+      }
+      .form-field textarea,
+      .form-field input {
+        width: 100%;
+        border: 1px solid #d8d8d2;
+        border-radius: 10px;
+        padding: 10px;
+        background: #fafaf8;
+        color: #171717;
+        font-size: 13px;
+        outline: none;
+        resize: vertical;
+      }
+      .form-field textarea:focus,
+      .form-field input:focus {
+        border-color: #999;
+        background: #fff;
+      }
+      .form-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .form-actions button {
+        flex: 1;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+      .cancel-btn {
+        background: #fff;
+        color: #555;
+      }
+      .submit-btn {
+        background: #171717;
+        color: #fff;
+        border-color: #171717 !important;
+      }
+      .confetti {
+        position: absolute;
+        bottom: -15px;
+        width: 7px;
+        height: 14px;
+        z-index: 20;
+        pointer-events: none;
+        background: #171717;
+        animation: fall 1s ease-out forwards;
+      }
+      @keyframes fall {
+        0% {
+          transform: translate3d(0, 0, 0) rotate(0);
+          opacity: 0;
+        }
+        12% {
+          opacity: 1;
+        }
+        100% {
+          transform: translate3d(var(--x), -620px, 0) rotate(var(--r));
+          opacity: 0;
+        }
+      }
+      @keyframes pulse {
+        50% {
+          transform: scale(1.05);
+        }
+      }
+      @keyframes pop {
+        0% {
+          transform: scale(0.7);
+        }
+        70% {
+          transform: scale(1.08);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      @keyframes hookIn {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) translateY(12px) scale(0.85);
+        }
+        65% {
+          opacity: 1;
+          transform: translate(-50%, -50%) translateY(-2px) scale(1.03);
+        }
+        100% {
+          transform: translate(-50%, -50%) translateY(0) scale(1);
+        }
+      }
+      @keyframes questionIn {
+        0% {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes reveal {
+        0% {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .hint.reveal {
+        animation: reveal 0.45s ease both;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .solve-overlay,
+        .question {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <main class="quiz" id="quiz">
+        <div class="quiz-content">
+          <div class="top-row">
+            <div class="logo">
+              <span class="logo-main" id="brandText"></span
+              ><span class="logo-by" id="creatorText"></span>
+            </div>
+          </div>
+          <button class="fullscreen" id="fullscreenBtn" aria-label="Fullscreen">
+            ⛶
+          </button>
+          <div class="riddle-area">
+            <button class="riddle-card" id="riddleCard">
+              <span class="solve-overlay">CAN YOU SOLVE IT?</span>
+              <p class="question" id="questionText"></p>
+              <div class="hint" id="hintBox">
+                <span class="hint-label">💡</span><span id="hintText"></span>
+              </div>
+              <div class="hint" id="hintBox2" style="display: none">
+                <span class="hint-label">💡</span><span id="hintText2"></span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+              </div>
+            </button>
+          </div>
+          <button class="timer" id="timer" type="button">
+            <span id="timerEmoji">😎</span><span id="timerText">10s</span>
+          </button>
+          <div class="answer-header">
+            <span>ANSWER • <span id="letterCount">0</span> LETTERS</span
+            ><span id="statusText">HIDDEN</span>
+          </div>
+          <div class="answer-box">
+            <div class="tiles" id="tiles"></div>
+            <div class="answer-reveal" id="answerReveal" style="display: none">
+              <span id="revealedAnswer"></span>
+            </div>
+          </div>
+          <div class="follow">RIDDLES BY ZEUX</div>
+        </div>
+      </main>
+    </div>
+    <div class="modal-backdrop" id="riddleModal">
+      <form class="riddle-form" id="riddleForm">
+        <h2>Edit Riddle</h2>
+        <div class="form-field">
+          <label for="riddleInput">1. RIDDLE</label
+          ><textarea id="riddleInput" rows="4" required></textarea>
+        </div>
+        <div class="form-field">
+          <label for="hint1Input">2. HINT 1</label
+          ><textarea id="hint1Input" rows="2" required></textarea>
+        </div>
+        <div class="form-field">
+          <label for="hint2Input">3. HINT 2</label
+          ><textarea id="hint2Input" rows="2" required></textarea>
+        </div>
+        <div class="form-field">
+          <label for="answerInput">4. ANSWER</label
+          ><input id="answerInput" required />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" id="cancelRiddle">
+            CANCEL</button
+          ><button type="submit" class="submit-btn">SUBMIT</button>
+        </div>
+      </form>
+    </div>
+    <script>
+      const CONFIG = {
+        question: "What has many teeth but cannot bite?",
+        hint: "You might use me in the morning.",
+        hint2: "I have many teeth arranged in a row.",
+        answer: "comb",
+        timerSeconds: 10,
+        hintTimerSeconds: 5,
+        hint2TimerSeconds: 10,
+        brand: "RIDDLES",
+        creator: "by ZEUX",
+      };
+      let question = CONFIG.question,
+        answer = CONFIG.answer.toUpperCase(),
+        timeLeft = CONFIG.timerSeconds,
+        revealed = false,
+        timerRunning = false,
+        hintVisible = false,
+        hint2Visible = false,
+        timerPhase = "initial",
+        timerId = null;
+      const $ = (id) => document.getElementById(id);
+      function updatePreview() {
+        $("brandText").textContent = CONFIG.brand;
+        $("creatorText").textContent = CONFIG.creator;
+        $("questionText").textContent = question;
+        $("hintText").textContent = hintVisible
+          ? CONFIG.hint
+          : "Hint coming in 10s";
+        $("hintText2").textContent = hint2Visible
+          ? CONFIG.hint2
+          : "Hint coming in 5s";
+        $("letterCount").textContent = answer.replace(/\s/g, "").length;
+        $("statusText").textContent = revealed
+          ? "REVEALED"
+          : hint2Visible
+            ? "HINT 2"
+            : hintVisible
+              ? "HINT 1"
+              : "HIDDEN";
+        $("timerText").textContent = revealed ? "Time's up!" : timeLeft + "s";
+        $("timerEmoji").textContent = getTimerEmoji();
+        const d =
+          timerPhase === "initial"
+            ? CONFIG.timerSeconds
+            : timerPhase === "hint"
+              ? CONFIG.hintTimerSeconds
+              : CONFIG.hint2TimerSeconds;
+        $("progressBar").style.width = Math.max(0, (timeLeft / d) * 100) + "%";
+        $("timer").classList.toggle(
+          "danger",
+          timeLeft <= 5 && timerRunning && !revealed,
+        );
+        renderTiles();
+      }
+      function renderTiles() {
+        const t = $("tiles");
+        t.innerHTML = "";
+        [...answer].forEach((l) => {
+          if (l === " ") {
+            const s = document.createElement("div");
+            s.style.width = "12px";
+            t.appendChild(s);
+            return;
+          }
+          const x = document.createElement("div");
+          x.className = "tile";
+          x.textContent = revealed ? l : "?";
+          if (!revealed) x.style.color = "#bbb";
+          else x.classList.add("revealed");
+          t.appendChild(x);
+        });
+        $("answerReveal").style.display = revealed ? "flex" : "none";
+        $("revealedAnswer").textContent = answer;
+      }
+      function getTimerEmoji() {
+        if (timerPhase === "initial") {
+          if (timeLeft > 7) return "😎";
+          if (timeLeft > 4) return "😬";
+          if (timeLeft > 2) return "😰";
+          return "🤯";
+        }
+        return timeLeft > 2 ? "💡" : "⏳";
+      }
+      function startTimer() {
+        if (timerRunning || revealed) return;
+        clearInterval(timerId);
+        timerRunning = true;
+        timerId = setInterval(() => {
+          if (!timerRunning || revealed) return;
+          timeLeft--;
+          updatePreview();
+          if (timeLeft <= 0) {
+            if (timerPhase === "initial") {
+              hintVisible = true;
+              timerPhase = "hint";
+              timeLeft = CONFIG.hintTimerSeconds;
+              $("hintBox2").style.display = "flex";
+              updatePreview();
+              $("hintBox").classList.remove("reveal");
+              void $("hintBox").offsetWidth;
+              $("hintBox").classList.add("reveal");
+            } else if (timerPhase === "hint") {
+              hint2Visible = true;
+              timerPhase = "hint2";
+              timeLeft = CONFIG.hint2TimerSeconds;
+              updatePreview();
+              $("hintBox2").classList.remove("reveal");
+              void $("hintBox2").offsetWidth;
+              $("hintBox2").classList.add("reveal");
+            } else reveal();
+          }
+        }, 1000);
+      }
+      function resetTimer() {
+        revealed = false;
+        hintVisible = false;
+        hint2Visible = false;
+        timerPhase = "initial";
+        timeLeft = CONFIG.timerSeconds;
+        $("hintBox2").style.display = "none";
+        timerRunning = false;
+        clearInterval(timerId);
+        updatePreview();
+      }
+      function reveal() {
+        revealed = true;
+        timerRunning = false;
+        clearInterval(timerId);
+        updatePreview();
+        launchConfetti();
+      }
+      function launchConfetti() {
+        const q = $("quiz");
+        const colors = ["#FFE55C", "#EF4444", "#38BDF8", "#4ADE80"];
+        for (let i = 0; i < 45; i++) {
+          const p = document.createElement("div");
+          p.className = "confetti";
+          p.style.left = 8 + Math.random() * 84 + "%";
+          p.style.background = colors[i % colors.length];
+          p.style.setProperty("--x", (Math.random() - 0.5) * 280 + "px");
+          p.style.setProperty("--r", (Math.random() - 0.5) * 720 + "deg");
+          p.style.animationDelay = Math.random() * 0.2 + "s";
+          q.appendChild(p);
+          setTimeout(() => p.remove(), 1200);
+        }
+      }
+      function openRiddleForm() {
+        $("riddleInput").value = CONFIG.question;
+        $("hint1Input").value = CONFIG.hint;
+        $("hint2Input").value = CONFIG.hint2;
+        $("answerInput").value = CONFIG.answer;
+        $("riddleModal").classList.add("open");
+      }
+      function closeRiddleForm() {
+        $("riddleModal").classList.remove("open");
+      }
+      $("riddleCard").onclick = (e) => {
+        e.preventDefault();
+        openRiddleForm();
+      };
+      $("cancelRiddle").onclick = closeRiddleForm;
+      $("riddleModal").onclick = (e) => {
+        if (e.target === $("riddleModal")) closeRiddleForm();
+      };
+      $("riddleForm").onsubmit = (e) => {
+        e.preventDefault();
+        CONFIG.question = $("riddleInput").value.trim();
+        CONFIG.hint = $("hint1Input").value.trim();
+        CONFIG.hint2 = $("hint2Input").value.trim();
+        CONFIG.answer = $("answerInput").value.trim();
+        question = CONFIG.question;
+        answer = CONFIG.answer.toUpperCase();
+        resetTimer();
+        closeRiddleForm();
+      };
+      $("timer").onclick = () => {
+        if (revealed) resetTimer();
+        else if (!timerRunning) startTimer();
+      };
+      $("fullscreenBtn").onclick = async () => {
+        try {
+          if (!document.fullscreenElement) await $("quiz").requestFullscreen();
+          else await document.exitFullscreen();
+        } catch (e) {}
+      };
+      updatePreview();
+    </script>
+  </body>
 </html>
