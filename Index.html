@@ -27,18 +27,6 @@
       align-items: center;
     }
 
-    .layout {
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-      justify-content: center;
-    }
-
-    .side { width: 300px; flex-shrink: 0; }
-    .right-side { width: 280px; flex-shrink: 0; }
-    .sticky { position: sticky; top: 24px; }
     .preview-column {
       width: 100%;
       max-width: 420px;
@@ -73,53 +61,6 @@
       opacity: .6;
     }
 
-    textarea, input {
-      width: 100%;
-      margin-top: 4px;
-      background: #f8f5ff;
-      border: 3px solid #000;
-      border-radius: 14px;
-      padding: 12px;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 110px;
-      resize: vertical;
-      font-weight: 600;
-      line-height: 1.375;
-    }
-
-    input {
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-
-    textarea:focus, input:focus {
-      box-shadow: 4px 4px #000;
-    }
-
-    .button-row { display: flex; gap: 8px; margin-top: 16px; }
-    .btn {
-      flex: 1;
-      border: 3px solid #000;
-      border-radius: 999px;
-      padding: 10px;
-      font-size: 13px;
-      font-weight: 900;
-      transition: .15s;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn:active { transform: translateY(1px); }
-    .btn-dark { background: #000; color: #fff; }
-    .btn-yellow { background: #FFE55C; box-shadow: 3px 3px #000; }
-
-    .quick-swaps {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 3px solid rgba(0,0,0,.1);
-    }
     .swap {
       width: 100%;
       margin-top: 8px;
@@ -132,16 +73,6 @@
       font-weight: 700;
     }
     .swap:hover { background: #FFE55C; }
-
-    .tip {
-      background: #A78BFA;
-      color: #fff;
-      border: 3px solid #000;
-      border-radius: 18px;
-      padding: 16px;
-      box-shadow: 6px 6px #000;
-      transform: rotate(-1deg);
-    }
 
     /* ====== EDIT THESE DEFAULTS IN THE CONFIG SECTION BELOW ====== */
     .quiz {
@@ -286,22 +217,6 @@
 
     .fullscreen:hover {
       transform: scale(1.05);
-    }
-
-    .solve-badge {
-      position: relative;
-      align-self: center;
-      margin-top: 14px;
-      background: #FFE55C;
-      border: 3px solid #000;
-      border-radius: 999px;
-      padding: 7px 20px;
-      box-shadow: 5px 5px #000;
-      transform: rotate(-1.5deg);
-      font-family: Nunito, sans-serif;
-      font-size: 14px;
-      font-weight: 900;
-      letter-spacing: .08em;
     }
 
     .riddle-area {
@@ -479,55 +394,6 @@
       font-weight: 900;
     }
 
-    .handle {
-      align-self: center;
-      margin-top: 8px;
-      background: rgba(255,255,255,.7);
-      border: 2px solid #000;
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .18em;
-      opacity: .7;
-    }
-
-    .how {
-      background: #FFE55C;
-    }
-
-    .how ol {
-      margin: 12px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .how li {
-      display: flex;
-      gap: 8px;
-      margin: 8px 0;
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.35;
-    }
-
-    .step {
-      flex: 0 0 20px;
-      height: 20px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: #000;
-      color: #fff;
-      font-size: 11px;
-    }
-
-    .mobile-controls { display: none !important; width: 100%; gap: 8px; }
-    .mobile-editor { display: none; width: 100%; }
-
-    @keyframes bounce {
-      50% { transform: scale(1.08); }
-    }
     @keyframes wiggle {
       25% { transform: rotate(2deg); }
       50% { transform: rotate(-1deg); }
@@ -539,12 +405,6 @@
       100% { transform: scale(1) rotate(0); }
     }
 
-    @media (max-width: 1023px) {
-      .layout { flex-direction: column; align-items: center; }
-      .side, .right-side { display: none; }
-      .mobile-controls { display: flex; }
-      .mobile-editor.open { display: block; }
-    }
   </style>
 </head>
 
@@ -552,8 +412,7 @@
   <div class="app">
 
     <!-- =========================================================
-         EDIT THIS SECTION TO CREATE A NEW RIDDLE
-         ========================================================= -->
+            ========================================================= -->
     <script>
       const CONFIG = {
         question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
@@ -564,64 +423,12 @@
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
       };
 
-      const QUICK_RIDDLES = [
-        {
-          question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
-          answer: "ECHO"
-        },
-        {
-          question: "The more you take, the more you leave behind. What are they?",
-          answer: "FOOTSTEPS"
-        },
-        {
-          question: "I have cities but no houses, mountains but no trees, and water but no fish. What am I?",
-          answer: "MAP"
-        }
-      ];
     </script>
 
-    <div class="layout">
+    <main class="preview-column">
 
-      <!-- DESKTOP EDITOR -->
-      <aside class="side sticky">
-        <div class="panel">
-          <h3>✏️ EDIT RIDDLE</h3>
-          <p class="muted">Edit the question and answer. The preview updates instantly.</p>
-
-          <label class="label">QUESTION</label>
-          <textarea id="questionInput"></textarea>
-
-          <label class="label">ANSWER (TILES AUTO-GEN)</label>
-          <input id="answerInput" type="text">
-
-          <div class="button-row">
-            <button class="btn btn-dark" id="resetBtn">🔄 RESET TIMER</button>
-            <button class="btn btn-yellow" id="revealBtn">REVEAL</button>
-          </div>
-
-          <div class="quick-swaps">
-            <div class="label" style="margin-top:0">QUICK SWAPS</div>
-            <div id="quickSwaps"></div>
-          </div>
-        </div>
-
-        <div class="tip">
-          <strong>💡 Tip:</strong> Keep the answer under 12 letters for the cleanest look.
-        </div>
-      </aside>
-
-      <!-- MAIN PREVIEW -->
+      <!-- MOBILE VIEW -->
       <main class="preview-column">
-        <div class="mobile-controls">
-          <button class="btn btn-yellow" id="mobileEditBtn">✏️ EDIT</button>
-          <button class="btn btn-dark" id="mobileResetBtn">RESET</button>
-        </div>
-
-        <div class="panel mobile-editor" id="mobileEditor">
-          <textarea id="mobileQuestion"></textarea>
-          <input id="mobileAnswer" type="text">
-        </div>
-
         <div class="quiz" id="quiz">
           <div class="shape yellow-blob"></div>
           <div class="shape green-blob"></div>
@@ -678,10 +485,6 @@
           </div>
         </div>
 
-        <div style="display:none" id="mobileHints">
-          <span>👆 Tap card to reveal</span>
-          <span>⏱️ Auto after 15s</span>
-        </div>
       </main>
 
       <!-- DESKTOP INFO -->
@@ -714,9 +517,8 @@
       ============================================================
       RIDDLE APP LOGIC
       ============================================================
-      Most users only need to edit CONFIG above.
-      The functions below control the timer, reveal button,
-      answer tiles, fullscreen mode and editor.
+      Edit CONFIG above to create a new riddle.
+      The functions below control the timer, reveal and fullscreen mode.
     */
 
     let question = CONFIG.question;
@@ -729,10 +531,6 @@
     const $ = (id) => document.getElementById(id);
 
     function updateInputs() {
-      $("questionInput").value = question;
-      $("answerInput").value = answer;
-      $("mobileQuestion").value = question;
-      $("mobileAnswer").value = answer;
     }
 
     function updatePreview() {
@@ -832,69 +630,7 @@
       updatePreview();
     }
 
-    function toggleReveal() {
-      if (revealed) {
-        resetTimer();
-      } else {
-        reveal();
-      }
-    }
-
-    function setRiddle(newQuestion, newAnswer) {
-      question = newQuestion;
-      answer = newAnswer.toUpperCase();
-      resetTimer();
-      updateInputs();
-      updatePreview();
-    }
-
-    function setupInputs() {
-      $("questionInput").addEventListener("input", (event) => {
-        question = event.target.value;
-        $("mobileQuestion").value = question;
-        updatePreview();
-      });
-
-      $("answerInput").addEventListener("input", (event) => {
-        answer = event.target.value.toUpperCase();
-        $("mobileAnswer").value = answer;
-        updatePreview();
-      });
-
-      $("mobileQuestion").addEventListener("input", (event) => {
-        question = event.target.value;
-        $("questionInput").value = question;
-        updatePreview();
-      });
-
-      $("mobileAnswer").addEventListener("input", (event) => {
-        answer = event.target.value.toUpperCase();
-        $("answerInput").value = answer;
-        updatePreview();
-      });
-    }
-
-    function setupQuickSwaps() {
-      QUICK_RIDDLES.forEach((riddle) => {
-        const button = document.createElement("button");
-        button.className = "swap";
-        button.textContent = riddle.answer + " — " + riddle.question.slice(0, 38) + "...";
-        button.onclick = () => setRiddle(riddle.question, riddle.answer);
-        $("quickSwaps").appendChild(button);
-      });
-    }
-
-    $("resetBtn").onclick = resetTimer;
-    $("mobileResetBtn").onclick = resetTimer;
-    $("revealBtn").onclick = toggleReveal;
     $("riddleCard").onclick = toggleReveal;
-
-    $("mobileEditBtn").onclick = () => {
-      const editor = $("mobileEditor");
-      editor.classList.toggle("open");
-      $("mobileEditBtn").textContent =
-        editor.classList.contains("open") ? "CLOSE EDIT" : "✏️ EDIT";
-    };
 
     $("fullscreenBtn").onclick = async () => {
       try {
@@ -908,9 +644,6 @@
       }
     };
 
-    updateInputs();
-    setupInputs();
-    setupQuickSwaps();
     updatePreview();
     startTimer();
   </script>
