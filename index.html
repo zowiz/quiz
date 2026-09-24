@@ -469,7 +469,7 @@
         answer: "comb",
         timerSeconds: 10,
         hintTimerSeconds: 5,
-        hint2TimerSeconds: 5,
+        hint2TimerSeconds: 10,
         brand: "RIDDLES",
         creator: "by ZEUX",
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
@@ -572,7 +572,7 @@
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
       $("hintText").textContent = hintVisible ? CONFIG.hint : "Hint coming in 10s";
-      $("hintText2").textContent = hint2Visible ? CONFIG.hint2 : "Hint coming in 5s";
+      $("hintText2").textContent = hint2Visible ? CONFIG.hint2 : "Hint coming in 10s";
       
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent =
