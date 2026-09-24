@@ -507,10 +507,8 @@
         question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
         answer: "ECHO",
         timerSeconds: 15,
-        riddleNumber: "001",
         brand: "RIDDLES",
         creator: "by ZEUX",
-        handle: "@ZEUX.RIDDLES",
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
       };
 
@@ -605,10 +603,6 @@
 
             <div class="riddle-area">
               <button class="riddle-card" id="riddleCard">
-                <div class="riddle-tags">
-                  <span class="tag tag-black">RIDDLE #<span id="numberText"></span></span>
-                  <span class="tag tag-purple">VIRAL</span>
-                </div>
 
                 <p class="question" id="questionText"></p>
                 <div class="tap-hint">👆 TAP TO REVEAL ANSWER</div>
@@ -632,6 +626,7 @@
             </div>
 
             <div class="follow">▶ FOLLOW FOR MORE RIDDLES 🚀</div>
+            <div class="handle"><span id="handleText"></span> • 9:16 TEMPLATE</div>
           </div>
         </div>
 
@@ -695,6 +690,7 @@
     function updatePreview() {
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
+      $("handleText").textContent = CONFIG.handle;
       $("numberText").textContent = CONFIG.riddleNumber;
       $("questionText").textContent = question;
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
