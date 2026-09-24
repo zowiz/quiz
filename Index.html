@@ -401,7 +401,7 @@
       z-index: 20;
       pointer-events: none;
       border: 2px solid #000;
-      animation: confetti-fall 1.4s ease-out forwards;
+      animation: confetti-fall 1s ease-out forwards;
     }
 
     @keyframes confetti-fall {
@@ -665,7 +665,7 @@
         piece.style.setProperty("--confetti-rotate", ((Math.random() - 0.5) * 720) + "deg");
         piece.style.animationDelay = (Math.random() * 0.25) + "s";
         quiz.appendChild(piece);
-        setTimeout(() => piece.remove(), 1800);
+        setTimeout(() => piece.remove(), 1200);
       }
     }
 
