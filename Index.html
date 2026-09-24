@@ -440,19 +440,6 @@
       font-weight: 900;
     }
 
-    .handle {
-      align-self: center;
-      margin-top: 8px;
-      background: rgba(255,255,255,.7);
-      border: 2px solid #000;
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .18em;
-      opacity: .7;
-    }
-
     .how {
       background: #FFE55C;
     }
@@ -645,7 +632,6 @@
             </div>
 
             <div class="follow">▶ FOLLOW FOR MORE RIDDLES 🚀</div>
-            <div class="handle"><span id="handleText"></span> • 9:16 TEMPLATE</div>
           </div>
         </div>
 
@@ -709,7 +695,6 @@
     function updatePreview() {
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
-      $("handleText").textContent = CONFIG.handle;
       $("numberText").textContent = CONFIG.riddleNumber;
       $("questionText").textContent = question;
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
