@@ -4,114 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Zeux Riddles — Fun</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap");
-      :root{
-        --ink:#17152b;
-        --purple:#7057e8;
-        --purple-soft:#eeeaff;
-        --yellow:#ffe45c;
-        --pink:#ff6f91;
-        --blue:#55c8ff;
-        --green:#65d88b;
-        --red:#ef5350;
-        --cream:#fffaf2;
-        --line:#e8dfd3;
-      }
-      *{box-sizing:border-box}
-      html,body{margin:0;min-height:100%;font-family:Nunito,system-ui,sans-serif;background:#fff;color:var(--ink)}
-      button,input,textarea{font:inherit}
-      button{cursor:pointer}
-      .app{min-height:100vh;display:grid;place-items:center;padding:20px 10px;background:#fff}
-      .quiz{
-        position:relative;width:360px;max-width:92vw;aspect-ratio:9/16;
-        background:var(--cream);border:2px solid var(--ink);border-radius:30px;
-        overflow:hidden;box-shadow:9px 10px 0 var(--ink)
-      }
-      .quiz::before,.quiz::after{
-        content:"";position:absolute;pointer-events:none;z-index:0;border:3px solid transparent;border-radius:50%
-      }
-      .quiz::before{
-        width:620px;height:310px;left:-250px;top:8%;border-color:rgba(255,111,145,.18);
-        transform:rotate(-12deg);box-shadow:0 65px 0 -1px rgba(85,200,255,.15),0 130px 0 -1px rgba(101,216,139,.13)
-      }
-      .quiz::after{
-        width:600px;height:290px;right:-245px;bottom:6%;border-color:rgba(85,200,255,.16);
-        transform:rotate(13deg);box-shadow:0 -62px 0 -1px rgba(101,216,139,.13),0 -124px 0 -1px rgba(255,111,145,.11)
-      }
-      .quiz-content{position:relative;z-index:2;height:100%;padding:18px;display:flex;flex-direction:column}
-      .top-row{display:flex;align-items:center}
-      .logo{display:flex;align-items:baseline;gap:7px;transform:rotate(-2deg)}
-      .logo-main{font-family:"Baloo 2",sans-serif;font-size:24px;font-weight:800;letter-spacing:-.04em;color:var(--purple)}
-      .logo-by{font-size:10px;color:#777;font-weight:900;letter-spacing:.04em}
-      .fullscreen{
-        position:absolute;top:15px;right:15px;width:38px;height:38px;border:2px solid var(--ink);
-        border-radius:13px;background:#fff;color:var(--ink);font-size:18px;font-weight:900;box-shadow:3px 3px 0 var(--ink)
-      }
-      .riddle-area{flex:1;display:flex;align-items:center}
-      .riddle-card{
-        position:relative;width:100%;text-align:left;background:#eeeaff;border:2px solid var(--ink);
-        border-radius:24px;padding:34px 18px 0;cursor:pointer;overflow:visible;
-        box-shadow:6px 7px 0 var(--purple);transition:transform .18s ease,box-shadow .18s ease
-      }
-      .riddle-card:hover{transform:translate(-2px,-2px);box-shadow:8px 9px 0 var(--purple)}
-      .riddle-card:active{transform:translate(2px,2px);box-shadow:3px 4px 0 var(--purple)}
-      .solve-overlay{
-        position:absolute;z-index:5;top:0;left:50%;transform:translate(-50%,-50%) rotate(-2deg);
-        white-space:nowrap;margin:0;padding:8px 16px;border:2px solid var(--ink);border-radius:999px;
-        background:var(--red);color:#fff;font-size:12px;letter-spacing:.08em;font-weight:900;line-height:1.2;
-        box-shadow:4px 4px 0 var(--ink);animation:hookIn .65s cubic-bezier(.2,.9,.2,1) both
-      }
-      .question{position:relative;z-index:2;font-family:"Baloo 2",sans-serif;font-size:24px;line-height:1.12;margin:0;font-weight:800;letter-spacing:-.02em;animation:questionIn .55s .12s cubic-bezier(.2,.9,.2,1) both}
-      .hint{
-        position:relative;z-index:2;display:flex;align-items:flex-start;gap:7px;margin-top:15px;
-        font-size:12px;line-height:1.45;color:#514b60;font-weight:800
-      }
-      .hint + .hint{margin-top:7px}
-      .hint-label{font-size:12px}
-      .progress{position:relative;z-index:2;height:7px;width:calc(100% - 28px);margin:18px auto 0;background:#dcd5ea;overflow:hidden;border-radius:0 0 7px 7px}
-      .progress-bar{height:100%;width:100%;background:var(--yellow);transition:width 1s linear}
-      .timer{
-        align-self:center;display:flex;align-items:center;gap:8px;margin:17px auto 18px;
-        border:2px solid var(--ink);border-radius:999px;background:var(--yellow);padding:8px 18px;
-        color:var(--ink);font-size:25px;font-weight:900;box-shadow:4px 5px 0 var(--ink);transition:transform .12s
-      }
-      .timer:active{transform:translate(2px,2px);box-shadow:2px 3px 0 var(--ink)}
-      .timer:focus,.timer:focus-visible{outline:none}
-      .timer.danger{animation:pulse .5s infinite}
-      .answer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;color:#706979;font-size:9px;font-weight:900;letter-spacing:.08em}
-      .answer-box{border-top:2px dashed #d8cec1;padding-top:12px}
-      .tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
-      .tile{
-        width:32px;height:43px;display:grid;place-items:center;border:2px solid var(--ink);
-        border-radius:11px;background:#fff;font-size:18px;font-weight:900;box-shadow:2px 2px 0 #c9c0b5
-      }
-      .tile.revealed{background:var(--green);color:var(--ink);border-color:var(--ink);box-shadow:2px 2px 0 var(--ink);animation:pop .35s both}
-      .answer-reveal{justify-content:center;margin-top:10px}
-      .answer-reveal span{font-size:11px;font-weight:900;color:var(--purple)}
-      .follow{align-self:center;margin-top:16px;color:var(--purple);font-size:9px;font-weight:900;letter-spacing:.1em}
-      .modal-backdrop{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(23,21,43,.48)}
-      .modal-backdrop.open{display:flex}
-      .riddle-form{width:min(420px,100%);max-height:90vh;overflow:auto;background:var(--cream);border:2px solid var(--ink);border-radius:24px;padding:20px;box-shadow:8px 9px 0 var(--ink)}
-      .riddle-form h2{margin:0 0 18px;font-family:"Baloo 2",sans-serif;font-size:25px}
-      .form-field{margin-bottom:12px}
-      .form-field label{display:block;margin-bottom:6px;font-size:10px;font-weight:900;letter-spacing:.08em;color:#666}
-      .form-field textarea,.form-field input{width:100%;border:2px solid #d8d0c5;border-radius:12px;padding:10px;background:#fff;color:var(--ink);font-size:13px;outline:none;resize:vertical}
-      .form-field textarea:focus,.form-field input:focus{border-color:var(--purple);box-shadow:3px 3px 0 var(--purple-soft)}
-      .form-actions{display:flex;gap:8px;margin-top:16px}
-      .form-actions button{flex:1;border:2px solid var(--ink);border-radius:12px;padding:10px;font-size:12px;font-weight:900;box-shadow:3px 3px 0 var(--ink)}
-      .cancel-btn{background:#fff;color:#555}
-      .submit-btn{background:var(--purple);color:#fff;border-color:var(--ink)!important}
-      .confetti{position:absolute;bottom:-15px;width:9px;height:16px;z-index:20;pointer-events:none;border:1px solid var(--ink);animation:fall 1s ease-out forwards}
-      @keyframes fall{0%{transform:translate3d(0,0,0) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate3d(var(--x),-620px,0) rotate(var(--r));opacity:0}}
-      @keyframes pulse{50%{transform:scale(1.06)}}
-      @keyframes pop{0%{transform:scale(.7) rotate(-4deg)}70%{transform:scale(1.1) rotate(2deg)}100%{transform:scale(1) rotate(0)}}
-      @keyframes hookIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(-2deg) translateY(12px) scale(.85)}65%{opacity:1;transform:translate(-50%,-50%) rotate(-2deg) translateY(-2px) scale(1.04)}100%{transform:translate(-50%,-50%) rotate(-2deg) translateY(0) scale(1)}}
-      @keyframes questionIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
-      @keyframes reveal{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
-      .hint.reveal{animation:reveal .45s ease both}
-      @media (prefers-reduced-motion:reduce){.solve-overlay,.question{animation:none}.riddle-card,.timer{transition:none}}
-    </style>
+    <style>@import url("https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@500;700;800;900&display=swap");
+:root{--ink:#171717;--paper:#fffdf7;--yellow:#ffd83d;--pink:#ff4f81;--blue:#35baf6;--green:#52d273;--purple:#7b5cff;--red:#f04444;--cream:#fff7df;--muted:#625d61}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"DM Sans",system-ui,sans-serif;background:#f7f4ee;color:var(--ink)}
+button,input,textarea{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;place-items:center;padding:18px 10px;background:#f7f4ee}
+.quiz{position:relative;width:360px;max-width:92vw;aspect-ratio:9/16;background:var(--paper);border:3px solid var(--ink);border-radius:18px;overflow:hidden}
+.quiz::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.45;background-image:radial-gradient(var(--ink) 1px,transparent 1px);background-size:13px 13px;mask-image:linear-gradient(to bottom,transparent 0%,transparent 30%,#000 52%,#000 100%)}
+.quiz::after{content:"";position:absolute;width:170px;height:170px;right:-70px;top:105px;background:var(--pink);border:3px solid var(--ink);border-radius:50%;z-index:0}
+.quiz-content{position:relative;z-index:2;height:100%;padding:16px;display:flex;flex-direction:column}
+.top-row{display:flex;align-items:center}.logo{display:flex;align-items:center;gap:6px}.logo-main{font-family:Anton,sans-serif;font-size:27px;line-height:1;letter-spacing:.01em}.logo-main::after{content:"";display:inline-block;width:9px;height:9px;margin-left:4px;background:var(--yellow);border:2px solid var(--ink);border-radius:50%;vertical-align:middle}.logo-by{font-size:9px;color:var(--muted);font-weight:900;letter-spacing:.08em}
+.fullscreen{position:absolute;top:14px;right:14px;width:36px;height:36px;border:3px solid var(--ink);border-radius:50%;background:var(--blue);color:var(--ink);font-size:17px;font-weight:900}
+.riddle-area{flex:1;display:flex;align-items:center}.riddle-card{position:relative;width:100%;text-align:left;background:var(--yellow);border:3px solid var(--ink);border-radius:12px;padding:38px 18px 0;cursor:pointer;overflow:visible;transform:rotate(-1deg);transition:transform .15s ease}.riddle-card:hover{transform:rotate(0)}.riddle-card:active{transform:rotate(1deg)}
+.solve-overlay{position:absolute;z-index:5;top:0;left:50%;transform:translate(-50%,-50%) rotate(2deg);white-space:nowrap;padding:9px 16px;border:3px solid var(--ink);border-radius:5px;background:var(--pink);color:#fff;font-family:Anton,sans-serif;font-size:14px;letter-spacing:.04em;line-height:1;animation:hookIn .55s ease both}
+.question{position:relative;z-index:2;font-family:Anton,sans-serif;font-size:29px;line-height:1.04;margin:0;text-transform:uppercase;letter-spacing:.01em;animation:questionIn .45s .08s ease both}
+.hint{position:relative;z-index:2;display:flex;align-items:flex-start;gap:7px;margin-top:15px;font-size:12px;line-height:1.4;color:var(--ink);font-weight:800}.hint+.hint{margin-top:7px}.hint-label{font-size:13px}
+.progress{position:relative;z-index:2;height:9px;width:calc(100% - 24px);margin:18px auto 0;background:#fff;border:2px solid var(--ink);overflow:hidden;border-radius:0}.progress-bar{height:100%;width:100%;background:var(--blue);transition:width 1s linear}
+.timer{align-self:center;display:flex;align-items:center;gap:7px;margin:18px auto 17px;border:3px solid var(--ink);border-radius:7px;background:var(--blue);padding:8px 16px;color:var(--ink);font-family:Anton,sans-serif;font-size:25px;line-height:1}.timer:active{transform:none}.timer:focus,.timer:focus-visible{outline:none}.timer.danger{animation:shake .28s infinite}
+.answer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:var(--ink);font-size:9px;font-weight:900;letter-spacing:.08em}.answer-header span:last-child{background:var(--green);padding:3px 7px;border:2px solid var(--ink);border-radius:3px}.answer-box{border-top:3px solid var(--ink);padding-top:11px}
+.tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}.tile{width:33px;height:43px;display:grid;place-items:center;border:3px solid var(--ink);border-radius:5px;background:#fff;font-size:18px;font-weight:900}.tile.revealed{background:var(--green);color:var(--ink);animation:pop .3s both}
+.answer-reveal{justify-content:center;margin-top:9px}.answer-reveal span{font-family:Anton,sans-serif;font-size:14px;color:var(--ink);letter-spacing:.05em}.follow{align-self:center;margin-top:14px;color:var(--ink);font-size:8px;font-weight:900;letter-spacing:.14em;background:var(--yellow);padding:3px 7px}
+.modal-backdrop{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(23,23,23,.65)}.modal-backdrop.open{display:flex}.riddle-form{width:min(420px,100%);max-height:90vh;overflow:auto;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:20px}.riddle-form h2{margin:0 0 18px;font-family:Anton,sans-serif;font-size:28px;text-transform:uppercase}.form-field{margin-bottom:12px}.form-field label{display:block;margin-bottom:6px;font-size:10px;font-weight:900;letter-spacing:.08em;color:var(--ink)}.form-field textarea,.form-field input{width:100%;border:3px solid var(--ink);border-radius:5px;padding:10px;background:#fff;color:var(--ink);font-size:13px;outline:none;resize:vertical}.form-field textarea:focus,.form-field input:focus{border-color:var(--purple);background:var(--cream)}.form-actions{display:flex;gap:8px;margin-top:16px}.form-actions button{flex:1;border:3px solid var(--ink);border-radius:5px;padding:10px;font-size:12px;font-weight:900}.cancel-btn{background:#fff;color:var(--ink)}.submit-btn{background:var(--purple);color:#fff;border-color:var(--ink)!important}
+.confetti{position:absolute;bottom:-15px;width:10px;height:18px;z-index:20;pointer-events:none;border:2px solid var(--ink);animation:fall 1s ease-out forwards}@keyframes fall{0%{transform:translate3d(0,0,0) rotate(0);opacity:0}12%{opacity:1}100%{transform:translate3d(var(--x),-620px,0) rotate(var(--r));opacity:0}}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes hookIn{0%{opacity:0;transform:translate(-50%,-50%) rotate(2deg) scale(.8)}70%{opacity:1;transform:translate(-50%,-50%) rotate(-3deg) scale(1.05)}100%{transform:translate(-50%,-50%) rotate(2deg) scale(1)}}@keyframes questionIn{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}@keyframes reveal{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}.hint.reveal{animation:reveal .4s ease both}@media (prefers-reduced-motion:reduce){.solve-overlay,.question{animation:none}.riddle-card{transition:none}}</style>
   </head>
   <body>
     <div class="app">
