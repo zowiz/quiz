@@ -259,19 +259,14 @@
     }
 
     .hint {
-      display: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
       margin-top: 10px;
       padding: 0;
       font-size: 12px;
       font-weight: 800;
       line-height: 1.35;
-      animation: pop .45s both;
-    }
-
-    .hint.visible {
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
 
     .hint-label {
@@ -545,7 +540,7 @@
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
       $("hintText").textContent = CONFIG.hint;
-      $("hintBox").classList.toggle("visible", hintVisible);
+      
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent =
         revealed ? "REVEALED" : hintVisible ? "HINT" : "HIDDEN";
