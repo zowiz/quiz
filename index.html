@@ -508,11 +508,11 @@
                 <p class="question" id="questionText"></p>
 
                 <div class="hint" id="hintBox">
-                  <span class="hint-label">💡 HINT 1</span>
+                  <span class="hint-label">💡</span>
                   <span id="hintText"></span>
                 </div>
                 <div class="hint" id="hintBox2" style="display:none;">
-                  <span class="hint-label">💡 HINT 2</span>
+                  <span class="hint-label">💡</span>
                   <span id="hintText2"></span>
                 </div>
 
@@ -571,12 +571,8 @@
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
-      $("hintText").textContent = hintVisible
-        ? CONFIG.hint
-        : "Hint coming in " + timeLeft + "s";
-      $("hintText2").textContent = hint2Visible
-        ? CONFIG.hint2
-        : "Hint coming in " + timeLeft + "s";
+      $("hintText").textContent = hintVisible ? CONFIG.hint : "Hint coming in 10s";
+      $("hintText2").textContent = hint2Visible ? CONFIG.hint2 : "Hint coming in 5s";
       
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent =
