@@ -523,7 +523,6 @@
         riddleNumber: "001",
         brand: "RIDDLES",
         creator: "by ZEUX",
-        handle: "@ZEUX.RIDDLES",
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
       };
 
@@ -640,7 +639,6 @@
             </div>
 
             <div class="follow">▶ SUBSCRIBE FOR MORE RIDDLES 🚀</div>
-            <div class="handle"><span id="handleText"></span> • 9:16 TEMPLATE</div>
           </div>
         </div>
 
@@ -704,7 +702,6 @@
     function updatePreview() {
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
-      $("handleText").textContent = CONFIG.handle;
       $("questionText").textContent = question;
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent = revealed ? "REVEALED" : "HIDDEN";
