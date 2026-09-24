@@ -543,7 +543,9 @@
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
-      $("hintText").textContent = CONFIG.hint;
+      $("hintText").textContent = hintVisible
+        ? CONFIG.hint
+        : "Hint coming in " + timeLeft + "s";
       
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent =
