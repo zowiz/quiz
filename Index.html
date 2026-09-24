@@ -253,8 +253,36 @@
       transform: rotate(0);
       box-shadow: 10px 10px #000;
     }
-    .question{
+    .question {
       font-size: 22px;
+      margin: 0;
+    }
+
+    .hint {
+      display: none;
+      margin-top: 16px;
+      padding: 10px 12px;
+      background: #FFE55C;
+      border: 3px solid #000;
+      border-radius: 14px;
+      box-shadow: 4px 4px #000;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.35;
+      animation: pop .45s both;
+    }
+
+    .hint.visible {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hint-label {
+      font-family: Nunito, sans-serif;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .08em;
     }
 
     .solve-overlay {
@@ -420,8 +448,10 @@
     <script>
       const CONFIG = {
         question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
+        hint: "You can hear me, but I have no body.",
         answer: "ECHO",
         timerSeconds: 15,
+        hintTimerSeconds: 10,
         brand: "RIDDLES",
         creator: "by ZEUX",
         colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
@@ -458,6 +488,11 @@
                 <span class="solve-overlay">⚡ CAN YOU SOLVE IT? 🔥</span>
 
                 <p class="question" id="questionText"></p>
+
+                <div class="hint" id="hintBox">
+                  <span class="hint-label">💡 HINT</span>
+                  <span id="hintText"></span>
+                </div>
 
                 <div class="progress">
                   <div class="progress-bar" id="progressBar"></div>
@@ -503,7 +538,7 @@
     let timeLeft = CONFIG.timerSeconds;
     let revealed = false;
     let timerRunning = false;
-    let firstLetterRevealed = false;
+    let hintVisible = false;
     let timerPhase = "initial";
     let timerId = null;
 
@@ -513,6 +548,8 @@
       $("brandText").textContent = CONFIG.brand;
       $("creatorText").textContent = CONFIG.creator;
       $("questionText").textContent = question;
+      $("hintText").textContent = CONFIG.hint;
+      $("hintBox").classList.toggle("visible", hintVisible);
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent = revealed ? "REVEALED" : "HIDDEN";
       $("timerText").textContent = revealed ? "Time's up!" : timeLeft + "s";
@@ -545,10 +582,7 @@
         tile.className = "tile";
 
         if (/^[A-Z]$/i.test(letter) && !revealed) {
-          if (firstLetterRevealed && index === 0) {
-            tile.textContent = letter;
-          } else {
-            tile.textContent = "?";
+          tile.textContent = "?";
             tile.style.color = "rgba(0,0,0,.2)";
             tile.style.fontSize = "16px";
           }
@@ -571,9 +605,14 @@
     }
 
     function getTimerEmoji() {
-      if (timeLeft > 10) return "😎";
-      if (timeLeft > 5) return "😬";
-      if (timeLeft > 2) return "😰";
+      if (timerPhase === "initial") {
+        if (timeLeft > 10) return "😎";
+        if (timeLeft > 5) return "😬";
+        if (timeLeft > 2) return "😰";
+        return "🤯";
+      }
+      if (timeLeft > 5) return "💡";
+      if (timeLeft > 2) return "⏳";
       return "🤯";
     }
 
@@ -581,26 +620,18 @@
       if (timerRunning || revealed) return;
       clearInterval(timerId);
       timerRunning = true;
+
       timerId = setInterval(() => {
         if (!timerRunning || revealed) return;
-        if (timeLeft <= 0) {
-          if (timerPhase === "initial") {
-            firstLetterRevealed = true;
-            timerPhase = "second";
-            timeLeft = 10;
-            updatePreview();
-          } else {
-            reveal();
-          }
-          return;
-        }
+
         timeLeft--;
         updatePreview();
+
         if (timeLeft <= 0) {
           if (timerPhase === "initial") {
-            firstLetterRevealed = true;
-            timerPhase = "second";
-            timeLeft = 10;
+            hintVisible = true;
+            timerPhase = "hint";
+            timeLeft = CONFIG.hintTimerSeconds;
             updatePreview();
           } else {
             reveal();
@@ -610,7 +641,7 @@
     }
     function resetTimer() {
       revealed = false;
-      firstLetterRevealed = false;
+      hintVisible = false;
       timerPhase = "initial";
       timeLeft = CONFIG.timerSeconds;
       timerRunning = false;
