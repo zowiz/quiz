@@ -253,6 +253,95 @@
       transform: rotate(0);
       box-shadow: 10px 10px #000;
     }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,.65);
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .riddle-form {
+      width: min(420px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #fff;
+      border: 4px solid #000;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 10px 10px #000;
+    }
+
+    .riddle-form h2 {
+      margin: 0 0 16px;
+      font-family: Nunito, sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .form-field {
+      margin-bottom: 12px;
+    }
+
+    .form-field label {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .form-field textarea,
+    .form-field input {
+      width: 100%;
+      border: 3px solid #000;
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #f8f5ff;
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
+      resize: vertical;
+      outline: none;
+    }
+
+    .form-field textarea:focus,
+    .form-field input:focus {
+      background: #FFE55C;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .form-actions button {
+      flex: 1;
+      border: 3px solid #000;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-family: Nunito, sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .cancel-btn {
+      background: #fff;
+      box-shadow: 3px 3px #000;
+    }
+
+    .submit-btn {
+      background: #FFE55C;
+      box-shadow: 3px 3px #000;
+    }
     .question {
       font-size: 22px;
       margin: 0;
@@ -546,6 +635,37 @@
     </main>
   </div>
 
+  <div class="modal-backdrop" id="riddleModal">
+    <form class="riddle-form" id="riddleForm">
+      <h2>Edit Riddle</h2>
+
+      <div class="form-field">
+        <label for="riddleInput">1. RIDDLE</label>
+        <textarea id="riddleInput" rows="4" required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="hint1Input">2. HINT 1</label>
+        <textarea id="hint1Input" rows="2" required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="hint2Input">3. HINT 2</label>
+        <textarea id="hint2Input" rows="2" required></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="answerInput">4. ANSWER</label>
+        <input id="answerInput" type="text" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" id="cancelRiddle">CANCEL</button>
+        <button type="submit" class="submit-btn">SUBMIT</button>
+      </div>
+    </form>
+  </div>
+
   <script>
     /*
       ============================================================
@@ -719,15 +839,46 @@
       launchConfetti();
     }
 
-    function toggleReveal() {
-      if (revealed) {
-        resetTimer();
-      } else {
-        reveal();
-      }
+    function openRiddleForm() {
+      $("riddleInput").value = CONFIG.question;
+      $("hint1Input").value = CONFIG.hint;
+      $("hint2Input").value = CONFIG.hint2;
+      $("answerInput").value = CONFIG.answer;
+      $("riddleModal").classList.add("open");
     }
 
-    $("riddleCard").onclick = toggleReveal;
+    function closeRiddleForm() {
+      $("riddleModal").classList.remove("open");
+    }
+
+    $("riddleCard").onclick = (event) => {
+      event.preventDefault();
+      openRiddleForm();
+    };
+
+    $("cancelRiddle").onclick = closeRiddleForm;
+
+    $("riddleModal").onclick = (event) => {
+      if (event.target === $("riddleModal")) {
+        closeRiddleForm();
+      }
+    };
+
+    $("riddleForm").onsubmit = (event) => {
+      event.preventDefault();
+
+      CONFIG.question = $("riddleInput").value.trim();
+      CONFIG.hint = $("hint1Input").value.trim();
+      CONFIG.hint2 = $("hint2Input").value.trim();
+      CONFIG.answer = $("answerInput").value.trim();
+
+      question = CONFIG.question;
+      answer = CONFIG.answer.toUpperCase();
+
+      resetTimer();
+      closeRiddleForm();
+      updatePreview();
+    };
 
     $("timer").onclick = () => {
       if (revealed) {
