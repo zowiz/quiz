@@ -421,11 +421,6 @@
 
             <button class="fullscreen" id="fullscreenBtn" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
 
-            <div class="timer" id="timer">
-              <span id="timerEmoji">😎</span>
-              <span id="timerText">15s</span>
-            </div>
-
             <div class="riddle-area">
               <button class="riddle-card" id="riddleCard">
                 <span class="solve-overlay">⚡ CAN YOU SOLVE IT? 🔥</span>
@@ -436,6 +431,11 @@
                   <div class="progress-bar" id="progressBar"></div>
                 </div>
               </button>
+            </div>
+
+            <div class="timer" id="timer">
+              <span id="timerEmoji">😎</span>
+              <span id="timerText">15s</span>
             </div>
 
             <div class="answer-header">
@@ -481,7 +481,7 @@
       $("questionText").textContent = question;
       $("letterCount").textContent = answer.replace(/\s/g, "").length;
       $("statusText").textContent = revealed ? "REVEALED" : "HIDDEN";
-      $("timerText").textContent = revealed ? "DONE!" : timeLeft + "s";
+      $("timerText").textContent = revealed ? "Time's up!" : timeLeft + "s";
       $("timerEmoji").textContent = getTimerEmoji();
 
       $("progressBar").style.width =
