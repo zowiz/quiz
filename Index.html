@@ -249,14 +249,21 @@
     .timer {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: #fff;
-      border: 3px solid #000;
+      justify-content: center;
+      gap: 10px;
+      align-self: center;
+      min-width: 110px;
+      margin-top: 16px;
+      background: #FFE55C;
+      border: 4px solid #000;
       border-radius: 999px;
-      padding: 5px 12px;
-      box-shadow: 4px 4px #000;
+      padding: 9px 20px;
+      box-shadow: 5px 5px #000;
       font-family: Nunito, sans-serif;
+      font-size: 20px;
       font-weight: 900;
+      position: relative;
+      z-index: 4;
     }
 
     .timer.danger { animation: bounce .4s infinite, wiggle .6s infinite; }
@@ -310,6 +317,26 @@
     .riddle-card:hover {
       transform: rotate(0);
       box-shadow: 10px 10px #000;
+    }
+
+    .solve-overlay {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-1.5deg);
+      z-index: 5;
+      width: max-content;
+      max-width: 92%;
+      background: #FFE55C;
+      border: 3px solid #000;
+      border-radius: 999px;
+      padding: 7px 16px;
+      box-shadow: 5px 5px #000;
+      font-family: Nunito, sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .03em;
+      white-space: nowrap;
     }
 
     .riddle-tags {
@@ -606,17 +633,14 @@
               </div>
             </div>
 
-            <div class="solve-badge">⚡ CAN YOU SOLVE IT? 🔥</div>
-
-            <div style="display:flex;align-items:center">
-                <div class="timer" id="timer">
-                  <span id="timerEmoji">😎</span>
-                  <span id="timerText">15s</span>
-                </div>
+            <div class="timer" id="timer">
+              <span id="timerEmoji">😎</span>
+              <span id="timerText">15s</span>
             </div>
 
             <div class="riddle-area">
               <button class="riddle-card" id="riddleCard">
+                <span class="solve-overlay">⚡ CAN YOU SOLVE IT? 🔥</span>
 
                 <p class="question" id="questionText"></p>
                 <div class="tap-hint">👆 TAP TO REVEAL ANSWER</div>
