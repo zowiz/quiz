@@ -74,7 +74,7 @@
     }
     .swap:hover { background: #FFE55C; }
 
-    /* ====== EDIT THESE DEFAULTS IN THE CONFIG SECTION BELOW ====== */
+    /* ====== RIDDLE PREVIEW ====== */
     .quiz {
       position: relative;
       width: 360px;
@@ -266,37 +266,6 @@
       white-space: nowrap;
     }
 
-    .riddle-tags {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .tag {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: .1em;
-    }
-    .tag-black { background: #000; color: #fff; }
-    .tag-purple { background: #A78BFA; color: #fff; border: 2px solid #000; }
-
-    .question {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.3;
-      font-weight: 400;
-      letter-spacing: 0;
-    }
-
-    .tap-hint {
-      margin-top: 12px;
-      font-size: 11px;
-      font-weight: 900;
-      opacity: .6;
-    }
-
     .progress {
       height: 8px;
       margin: 14px -18px -18px;
@@ -394,6 +363,10 @@
       font-weight: 900;
     }
 
+    @keyframes bounce {
+      50% { transform: scale(1.08); }
+    }
+
     @keyframes wiggle {
       25% { transform: rotate(2deg); }
       50% { transform: rotate(-1deg); }
@@ -411,8 +384,7 @@
 <body>
   <div class="app">
 
-    <!-- =========================================================
-            ========================================================= -->
+    <!-- Edit this CONFIG to create a new riddle -->
     <script>
       const CONFIG = {
         question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
@@ -426,9 +398,6 @@
     </script>
 
     <main class="preview-column">
-
-      <!-- MOBILE VIEW -->
-      <main class="preview-column">
         <div class="quiz" id="quiz">
           <div class="shape yellow-blob"></div>
           <div class="shape green-blob"></div>
@@ -484,32 +453,8 @@
             <div class="follow">▶ SUBSCRIBE FOR MORE RIDDLES 🚀</div>
           </div>
         </div>
-
-      </main>
-
-      <!-- DESKTOP INFO -->
-      <aside class="right-side sticky">
-        <div class="panel how">
-          <h3>HOW IT WORKS</h3>
-          <ol>
-            <li><span class="step">1</span> Timer starts at the configured time.</li>
-            <li><span class="step">2</span> Answer tiles stay visible to build curiosity.</li>
-            <li><span class="step">3</span> Tap the card or Reveal to show the answer.</li>
-            <li><span class="step">4</span> Use fullscreen for clean screen recording.</li>
-          </ol>
-        </div>
-
-        <div class="panel">
-          <div class="label" style="margin-top:0">EXPORT READY</div>
-          <p><strong>9:16 vertical</strong>, 360×640 safe area, designed for Shorts, TikTok and Reels.</p>
-          <p class="muted">Fredoka • Bubbly • Cartoon Shadow • Pop Tiles • Blob BG</p>
-        </div>
-      </aside>
-    </div>
-
-    <p class="muted" style="margin-top:32px;font-size:11px;font-weight:700">
-      Built for YouTube Shorts / TikTok / Reels • RIDDLES by ZEUX • Fun &gt; Serious
-    </p>
+      </div>
+    </main>
   </div>
 
   <script>
@@ -529,9 +474,6 @@
     let timerId = null;
 
     const $ = (id) => document.getElementById(id);
-
-    function updateInputs() {
-    }
 
     function updatePreview() {
       $("brandText").textContent = CONFIG.brand;
@@ -628,6 +570,14 @@
       timerRunning = false;
       clearInterval(timerId);
       updatePreview();
+    }
+
+    function toggleReveal() {
+      if (revealed) {
+        resetTimer();
+      } else {
+        reveal();
+      }
     }
 
     $("riddleCard").onclick = toggleReveal;
