@@ -1,907 +1,319 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Zeux Riddles</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guess the Celebrity</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800;900&family=Manrope:wght@700;800&display=swap');
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@800;900&display=swap');
+:root{
+  --bg:#111111;
+  --card:#f4f1ea;
+  --ink:#151515;
+  --muted:#77736d;
+  --line:#d8d3ca;
+  --accent:#e9ff4f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);font-family:"DM Sans",system-ui,sans-serif}
+body{color:var(--ink)}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
 
-    * { box-sizing: border-box; }
-    html, body { min-height: 100%; }
-    body {
-      margin: 0;
-      background: #f8f5ff;
-      color: #000;
-      font-family: Fredoka, system-ui, sans-serif;
-    }
-    button, input, textarea { font: inherit; }
-    button { cursor: pointer; }
+.app{min-height:100vh;display:grid;place-items:center;padding:18px 10px}
+.quiz{
+  position:relative;width:360px;max-width:92vw;aspect-ratio:9/16;
+  overflow:hidden;background:var(--card);border:1px solid #000;
+  border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.35)
+}
+.quiz-content{height:100%;padding:22px 20px 18px;display:flex;flex-direction:column}
 
-    .app {
-      min-height: 100vh;
-      padding: 24px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+.header{display:flex;align-items:flex-start;justify-content:space-between}
+.eyebrow{
+  font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:7px
+}
+.title{
+  margin:0;font-family:Manrope,sans-serif;font-size:31px;line-height:.98;
+  letter-spacing:-.055em;max-width:285px
+}
+.title span{display:block}
+.fullscreen{
+  width:36px;height:36px;flex:none;border:1px solid var(--ink);border-radius:50%;
+  background:transparent;color:var(--ink);font-size:17px
+}
+.fullscreen:hover{background:var(--ink);color:var(--card)}
 
-    .preview-column {
-      width: 100%;
-      max-width: 420px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
+.hints{
+  margin-top:25px;display:flex;flex-direction:column;gap:9px
+}
+.hint{
+  min-height:58px;border:1px solid var(--ink);border-radius:9px;
+  padding:11px 13px;display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.34);transition:background .25s,transform .25s
+}
+.hint.revealed{background:#fff;border-color:var(--ink)}
+.hint-number{
+  width:25px;height:25px;display:grid;place-items:center;flex:none;
+  border:1px solid var(--ink);border-radius:50%;font-size:10px;font-weight:900
+}
+.hint-copy{min-width:0;font-size:12px;line-height:1.28;font-weight:700}
+.hint.locked .hint-number{background:var(--ink);color:var(--card)}
+.hint.locked .hint-copy{font-family:Manrope,sans-serif;font-size:18px;letter-spacing:.02em}
+.hint.reveal{animation:reveal .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes reveal{
+  from{opacity:.2;transform:translateY(7px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
-    .panel {
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 6px 6px #000;
-      margin-bottom: 16px;
-    }
+.bottom{
+  margin-top:auto;padding-top:18px;text-align:center
+}
+.counter{
+  font-family:Manrope,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.05em;
+  line-height:1;margin-bottom:10px
+}
+.tip{
+  max-width:245px;margin:0 auto;font-size:10px;line-height:1.35;
+  color:var(--muted);font-weight:700
+}
+.tip.final{color:var(--ink);font-size:11px}
+.final-message{
+  font-family:Manrope,sans-serif;font-size:25px;font-weight:800;
+  letter-spacing:-.04em;line-height:1.05;margin-bottom:9px
+}
 
-    .panel h3, .brand {
-      font-family: Nunito, Fredoka, sans-serif;
-      font-weight: 900;
-    }
+.edit-hint{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  font-size:8px;color:rgba(0,0,0,.25);white-space:nowrap
+}
 
-    .panel h3 { margin: 0; font-size: 18px; }
-    .muted { color: rgba(0,0,0,.6); }
-    .label {
-      display: block;
-      margin-top: 20px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: .14em;
-      opacity: .6;
-    }
+.modal-backdrop{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  padding:20px;background:rgba(0,0,0,.72)
+}
+.modal-backdrop.open{display:flex}
+.form{
+  width:min(420px,100%);max-height:90vh;overflow:auto;background:#f4f1ea;
+  border:1px solid #000;border-radius:16px;padding:20px;box-shadow:0 12px 35px rgba(0,0,0,.35)
+}
+.form h2{margin:0 0 18px;font-family:Manrope,sans-serif;font-size:21px}
+.field{margin-bottom:12px}
+.field label{display:block;margin-bottom:5px;font-size:10px;font-weight:900;letter-spacing:.12em}
+.field textarea,.field input{
+  width:100%;border:1px solid #000;border-radius:8px;padding:10px;background:#fff;
+  font-size:13px;font-weight:600;outline:none;resize:vertical
+}
+.field textarea:focus,.field input:focus{box-shadow:inset 0 0 0 2px var(--accent)}
+.actions{display:flex;gap:9px;margin-top:17px}
+.actions button{
+  flex:1;border:1px solid #000;border-radius:8px;padding:10px;
+  font-size:11px;font-weight:900
+}
+.cancel{background:#fff}
+.submit{background:var(--accent)}
 
-    .swap {
-      width: 100%;
-      margin-top: 8px;
-      padding: 8px 12px;
-      text-align: left;
-      background: #fff;
-      border: 2px solid #000;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .swap:hover { background: #FFE55C; }
-
-    /* ====== RIDDLE PREVIEW ====== */
-    .quiz {
-      position: relative;
-      width: 360px;
-      max-width: 92vw;
-      aspect-ratio: 9 / 16;
-      overflow: hidden;
-      isolation: isolate;
-      user-select: none;
-      border: 4px solid #000;
-      border-radius: 32px;
-      box-shadow: 12px 12px #000;
-      background: radial-gradient(120% 70% at 20% 15%, #f97316 0%, #ec4899 35%, #8b5cf6 70%, #7c3aed 100%);
-    }
-
-    .shape {
-      position: absolute;
-      pointer-events: none;
-      border: 3px solid #000;
-    }
-
-    .yellow-blob {
-      top: -80px; left: -80px;
-      width: 260px; height: 260px;
-      background: #FFE55C;
-      border-width: 4px;
-      border-radius: 50%;
-      transform: rotate(12deg);
-    }
-
-    .green-blob {
-      right: -64px; bottom: -96px;
-      width: 320px; height: 320px;
-      background: #4ADE80;
-      border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
-      border-width: 4px;
-    }
-
-    .white-blob {
-      left: -40px; top: 42%;
-      width: 120px; height: 120px;
-      background: #fff;
-      border-radius: 50%;
-    }
-
-    .blue-square {
-      right: 8%; top: 18%;
-      width: 74px; height: 74px;
-      background: #38BDF8;
-      border-radius: 30px;
-      transform: rotate(12deg);
-    }
-
-    .decoration {
-      position: absolute;
-      pointer-events: none;
-      font-size: 22px;
-    }
-
-    .quiz-content {
-      position: relative;
-      z-index: 2;
-      height: 100%;
-      width: 100%;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .logo {
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 14px;
-      padding: 6px 12px;
-      box-shadow: 4px 4px #000;
-      width:100%;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .logo-main {
-      font-family: Nunito, sans-serif;
-      font-size: 20px;
-      font-weight: 900;
-      text-shadow: 2px 2px #FFE55C;
-    }
-
-    .logo-by {
-      background: #000;
-      color: #fff;
-      border-radius: 999px;
-      padding: 1px 6px;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .timer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      align-self: center;
-      width: fit-content;
-      min-width: 110px;
-      margin: 0 auto 12px;
-      background: #FFE55C;
-      border: 4px solid #000;
-      border-radius: 999px;
-      padding: 9px 20px;
-      box-shadow: 5px 5px #000;
-      font-family: Nunito, sans-serif;
-      font-size: 30px;
-      font-weight: 900;
-      position: relative;
-      z-index: 4;
-    }
-
-    .timer.danger { animation: bounce .4s infinite, wiggle .6s infinite; }
-
-    .timer:focus,
-    .timer:focus-visible,
-    .timer:active {
-      outline: none;
-      transform: none;
-    }
-
-    .fullscreen {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 42px;
-      height: 42px;
-      border: 3px solid #000;
-      border-radius: 50%;
-      background: #000;
-      color: #fff;
-      z-index: 10;
-      box-shadow: 3px 3px #FFE55C;
-      font-size: 18px;
-      line-height: 1;
-    }
-
-    .fullscreen:hover {
-      transform: scale(1.05);
-    }
-
-    .riddle-area {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 12px 0;
-    }
-
-    .riddle-card {
-      position: relative;
-      width: 100%;
-      text-align: left;
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 26px;
-      padding: 18px;
-      padding-top: 30px;
-      box-shadow: 8px 8px #000;
-      transform: rotate(-.6deg);
-      cursor: pointer;
-    }
-
-    .riddle-card:hover {
-      transform: rotate(0);
-      box-shadow: 10px 10px #000;
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      background: rgba(0,0,0,.65);
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .riddle-form {
-      width: min(420px, 100%);
-      max-height: 90vh;
-      overflow-y: auto;
-      background: #fff;
-      border: 4px solid #000;
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: 10px 10px #000;
-    }
-
-    .riddle-form h2 {
-      margin: 0 0 16px;
-      font-family: Nunito, sans-serif;
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .form-field {
-      margin-bottom: 12px;
-    }
-
-    .form-field label {
-      display: block;
-      margin-bottom: 5px;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .form-field textarea,
-    .form-field input {
-      width: 100%;
-      border: 3px solid #000;
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: #f8f5ff;
-      color: #000;
-      font-size: 14px;
-      font-weight: 700;
-      resize: vertical;
-      outline: none;
-    }
-
-    .form-field textarea:focus,
-    .form-field input:focus {
-      background: #FFE55C;
-    }
-
-    .form-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .form-actions button {
-      flex: 1;
-      border: 3px solid #000;
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-family: Nunito, sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .cancel-btn {
-      background: #fff;
-      box-shadow: 3px 3px #000;
-    }
-
-    .submit-btn {
-      background: #FFE55C;
-      box-shadow: 3px 3px #000;
-    }
-    .question {
-      font-size: 22px;
-      margin: 0;
-    }
-
-    .hint {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      margin-top: 10px;
-      padding: 0;
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.35;
-    }
-
-    .hint.reveal {
-      animation: hint-reveal .65s cubic-bezier(.2,.9,.3,1.25) both;
-    }
-
-    @keyframes hint-reveal {
-      0% {
-        opacity: 0;
-        transform: translateY(10px) scale(.9);
-      }
-      60% {
-        opacity: 1;
-        transform: translateY(-3px) scale(1.04);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .hint + .hint { margin-top: 6px; }
-
-    .hint-label {
-      font-family: Nunito, sans-serif;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: .04em;
-    }
-
-    .solve-overlay {
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-1.5deg);
-      z-index: 5;
-      width: max-content;
-      max-width: 92%;
-      background: #FFE55C;
-      border: 3px solid #000;
-      border-radius: 999px;
-      padding: 7px 16px;
-      box-shadow: 5px 5px #000;
-      font-family: Nunito, sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-      letter-spacing: .03em;
-      white-space: nowrap;
-    }
-
-    .progress {
-      height: 8px;
-      margin: 14px -18px -18px;
-      background: rgba(0,0,0,.1);
-      overflow: hidden;
-      border-radius: 0 0 23px 23px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 100%;
-      background: #FFE55C;
-      transition: width 1s linear;
-    }
-
-    .answer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      padding: 0 4px;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .answer-count {
-      background: #000;
-      color: #fff;
-      border-radius: 999px;
-      padding: 4px 12px;
-      letter-spacing: .14em;
-    }
-
-    .answer-box {
-      background: rgba(255,255,255,.9);
-      border: 3px solid #000;
-      border-radius: 20px;
-      padding: 12px;
-      box-shadow: 6px 6px #000;
-      transform: rotate(.6deg);
-    }
-
-    .tiles {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .tile {
-      width: 36px;
-      height: 48px;
-      display: grid;
-      place-items: center;
-      border: 3px solid #000;
-      border-radius: 12px;
-      background: #F1F5F9;
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .tile.revealed {
-      background: var(--tile-color);
-      box-shadow: 3px 3px #000;
-      transform: rotate(var(--tile-rotate));
-      animation: pop .45s both;
-    }
-
-    .answer-reveal {
-      display: flex;
-      justify-content: center;
-      margin-top: 12px;
-    }
-
-    .answer-reveal span {
-      background: #FFE55C;
-      border: 2px solid #000;
-      border-radius: 999px;
-      padding: 4px 16px;
-      box-shadow: 2px 2px #000;
-      font-size: 12px;
-      font-weight: 900;
-    }
-
-    .follow {
-      align-self: center;
-      margin-top: 12px;
-      background: #000;
-      color: #fff;
-      border: 3px solid #000;
-      border-radius: 999px;
-      padding: 8px 16px;
-      box-shadow: 4px 4px #FFE55C;
-      font-family: Nunito, sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .confetti {
-      position: absolute;
-      bottom: -24px;
-      width: 12px;
-      height: 20px;
-      z-index: 20;
-      pointer-events: none;
-      border: 2px solid #000;
-      animation: confetti-fall 1s ease-out forwards;
-    }
-
-    @keyframes confetti-fall {
-      0% {
-        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-        opacity: 0;
-      }
-      12% {
-        opacity: 1;
-      }
-      100% {
-        transform: translate3d(var(--confetti-x), -680px, 0) rotate(var(--confetti-rotate)) scale(.8);
-        opacity: 0;
-      }
-    }
-
-    @keyframes bounce {
-      50% { transform: scale(1.08); }
-    }
-
-    @keyframes wiggle {
-      25% { transform: rotate(2deg); }
-      50% { transform: rotate(-1deg); }
-      75% { transform: rotate(1.5deg); }
-    }
-    @keyframes pop {
-      0% { transform: scale(.5) rotate(-8deg); }
-      60% { transform: scale(1.15) rotate(3deg); }
-      100% { transform: scale(1) rotate(0); }
-    }
-
-  </style>
+@media(max-height:700px){
+  .quiz-content{padding-top:17px;padding-bottom:14px}
+  .title{font-size:28px}
+  .hints{margin-top:17px;gap:7px}
+  .hint{min-height:52px;padding:9px 11px}
+  .bottom{padding-top:12px}
+  .counter{font-size:31px}
+}
+</style>
 </head>
-
 <body>
-  <div class="app">
-
-    <!-- Edit this CONFIG to create a new riddle -->
-    <script>
-      const CONFIG = {
-        question: "What has many teeth but cannot bite?",
-        hint: "You might use me in the morning.",
-        hint2: "I have many teeth arranged in a row.",
-        answer: "comb",
-        timerSeconds: 10,
-        hintTimerSeconds: 5,
-        hint2TimerSeconds: 10,
-        brand: "RIDDLES",
-        creator: "by ZEUX",
-        colors: ["#FFE55C", "#A78BFA", "#FB7185", "#4ADE80", "#38BDF8", "#FB923C"]
-      };
-
-    </script>
-
-    <main class="preview-column">
-        <div class="quiz" id="quiz">
-          <div class="shape yellow-blob"></div>
-          <div class="shape green-blob"></div>
-          <div class="shape white-blob"></div>
-          <div class="shape blue-square"></div>
-
-          <div class="decoration" style="top:22%;left:12%">💡</div>
-          <div class="decoration" style="top:34%;right:10%">✨</div>
-          <div class="decoration" style="bottom:36%;left:8%">🤔</div>
-          <div class="decoration" style="top:50%;right:6%;font-size:18px">⭐️</div>
-          <div class="decoration" style="bottom:44%;right:18%">🧠</div>
-
-          <div class="quiz-content">
-            <div class="top-row">
-              <div class="logo">
-                <span class="logo-main" id="brandText"></span>
-                <span class="logo-by" id="creatorText"></span>
-                <span>🧩</span>
-              </div>
-            </div>
-
-            <button class="fullscreen" id="fullscreenBtn" aria-label="Enter fullscreen" title="Fullscreen">⛶</button>
-
-            <div class="riddle-area">
-              <button class="riddle-card" id="riddleCard">
-                <span class="solve-overlay">⚡ CAN YOU SOLVE IT? 🔥</span>
-
-                <p class="question" id="questionText"></p>
-
-                <div class="hint" id="hintBox">
-                  <span class="hint-label">💡</span>
-                  <span id="hintText"></span>
-                </div>
-                <div class="hint" id="hintBox2" style="display:none;">
-                  <span class="hint-label">💡</span>
-                  <span id="hintText2"></span>
-                </div>
-
-                <div class="progress">
-                  <div class="progress-bar" id="progressBar"></div>
-                </div>
-              </button>
-            </div>
-
-            <button class="timer" id="timer" type="button" aria-label="Start timer">
-              <span id="timerEmoji">😎</span>
-              <span id="timerText">15s</span>
-            </button>
-
-            <div class="answer-header">
-              <span class="answer-count">ANSWER • <span id="letterCount">0</span> LETTERS</span>
-              <span>👀 <span id="statusText">HIDDEN</span></span>
-            </div>
-
-            <div class="answer-box">
-              <div class="tiles" id="tiles"></div>
-              <div class="answer-reveal" id="answerReveal" style="display:none">
-                <span>🎉 <span id="revealedAnswer"></span> 🎉</span>
-              </div>
-            </div>
-
-            <div class="follow">▶ SUBSCRIBE FOR MORE RIDDLES 🚀</div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <div class="modal-backdrop" id="riddleModal">
-    <form class="riddle-form" id="riddleForm">
-      <h2>Edit Riddle</h2>
-
-      <div class="form-field">
-        <label for="riddleInput">1. RIDDLE</label>
-        <textarea id="riddleInput" rows="4" required></textarea>
-      </div>
-
-      <div class="form-field">
-        <label for="hint1Input">2. HINT 1</label>
-        <textarea id="hint1Input" rows="2" required></textarea>
-      </div>
-
-      <div class="form-field">
-        <label for="hint2Input">3. HINT 2</label>
-        <textarea id="hint2Input" rows="2" required></textarea>
-      </div>
-
-      <div class="form-field">
-        <label for="answerInput">4. ANSWER</label>
-        <input id="answerInput" type="text" required>
-      </div>
-
-      <div class="form-actions">
-        <button type="button" class="cancel-btn" id="cancelRiddle">CANCEL</button>
-        <button type="submit" class="submit-btn">SUBMIT</button>
-      </div>
-    </form>
-  </div>
-
+<div class="app">
   <script>
-    /*
-      ============================================================
-      RIDDLE APP LOGIC
-      ============================================================
-      Edit CONFIG above to create a new riddle.
-      The functions below control the timer, reveal and fullscreen mode.
-    */
-
-    let question = CONFIG.question;
-    let answer = CONFIG.answer.toUpperCase();
-    let timeLeft = CONFIG.timerSeconds;
-    let revealed = false;
-    let timerRunning = false;
-    let hintVisible = false;
-    let hint2Visible = false;
-    let timerPhase = "initial";
-    let timerId = null;
-
-    const $ = (id) => document.getElementById(id);
-
-    function updatePreview() {
-      $("brandText").textContent = CONFIG.brand;
-      $("creatorText").textContent = CONFIG.creator;
-      $("questionText").textContent = question;
-      $("hintText").textContent = hintVisible ? CONFIG.hint : "Hint coming in 10s";
-      $("hintText2").textContent = hint2Visible ? CONFIG.hint2 : "Hint coming in 10s";
-      
-      $("letterCount").textContent = answer.replace(/\s/g, "").length;
-      $("statusText").textContent =
-        revealed ? "REVEALED" : hint2Visible ? "HINT 2" : hintVisible ? "HINT 1" : "HIDDEN";
-      $("timerText").textContent = revealed ? "Time's up!" : timeLeft + "s";
-      $("timerEmoji").textContent = getTimerEmoji();
-
-      const phaseDuration = timerPhase === "initial"
-        ? CONFIG.timerSeconds
-        : timerPhase === "hint"
-          ? CONFIG.hintTimerSeconds
-          : CONFIG.hint2TimerSeconds;
-
-      $("progressBar").style.width =
-        Math.max(0, (timeLeft / phaseDuration) * 100) + "%";
-
-      $("timer").classList.toggle(
-        "danger",
-        timeLeft <= 5 && timerRunning && !revealed
-      );
-
-      renderTiles();
-    }
-
-    function renderTiles() {
-      const tiles = $("tiles");
-      tiles.innerHTML = "";
-
-      [...answer].forEach((letter, index) => {
-        if (letter === " ") {
-          const spacer = document.createElement("div");
-          spacer.style.width = "14px";
-          tiles.appendChild(spacer);
-          return;
-        }
-
-        const tile = document.createElement("div");
-        tile.className = "tile";
-
-        if (/^[A-Z]$/i.test(letter) && !revealed) {
-          tile.textContent = "?";
-          tile.style.color = "rgba(0,0,0,.2)";
-          tile.style.fontSize = "16px";
-        } else {
-          tile.textContent = letter;
-        }
-
-        if (revealed) {
-          tile.classList.add("revealed");
-          tile.style.setProperty("--tile-color", CONFIG.colors[index % CONFIG.colors.length]);
-          tile.style.setProperty("--tile-rotate", index % 2 === 0 ? "-2deg" : "2deg");
-          tile.style.animationDelay = (index * 0.06) + "s";
-        }
-
-        tiles.appendChild(tile);
-      });
-
-      $("answerReveal").style.display = revealed ? "flex" : "none";
-      $("revealedAnswer").textContent = answer;
-    }
-
-    function getTimerEmoji() {
-      if (timerPhase === "initial") {
-        if (timeLeft > 7) return "😎";
-        if (timeLeft > 4) return "😬";
-        if (timeLeft > 2) return "😰";
-        return "🤯";
-      }
-      if (timerPhase === "hint") return timeLeft > 2 ? "💡" : "⏳";
-      return timeLeft > 2 ? "💡" : "⏳";
-    }
-
-    function startTimer() {
-      if (timerRunning || revealed) return;
-      clearInterval(timerId);
-      timerRunning = true;
-
-      timerId = setInterval(() => {
-        if (!timerRunning || revealed) return;
-
-        timeLeft--;
-        updatePreview();
-
-        if (timeLeft <= 0) {
-          if (timerPhase === "initial") {
-            hintVisible = true;
-            timerPhase = "hint";
-            timeLeft = CONFIG.hintTimerSeconds;
-            $("hintBox2").style.display = "flex";
-            updatePreview();
-            $("hintBox").classList.remove("reveal");
-            void $("hintBox").offsetWidth;
-            $("hintBox").classList.add("reveal");
-          } else if (timerPhase === "hint") {
-            hint2Visible = true;
-            timerPhase = "hint2";
-            timeLeft = CONFIG.hint2TimerSeconds;
-            updatePreview();
-            $("hintBox2").classList.remove("reveal");
-            void $("hintBox2").offsetWidth;
-            $("hintBox2").classList.add("reveal");
-          } else {
-            reveal();
-          }
-        }
-      }, 1000);
-    }
-    function resetTimer() {
-      revealed = false;
-      hintVisible = false;
-      hint2Visible = false;
-      timerPhase = "initial";
-      timeLeft = CONFIG.timerSeconds;
-      $("hintBox2").style.display = "none";
-      timerRunning = false;
-      clearInterval(timerId);
-      updatePreview();
-    }
-    function launchConfetti() {
-      const quiz = $("quiz");
-      const colors = CONFIG.colors;
-      const pieces = 70;
-
-      document.querySelectorAll(".confetti").forEach((piece) => piece.remove());
-
-      for (let i = 0; i < pieces; i++) {
-        const piece = document.createElement("div");
-        piece.className = "confetti";
-        piece.style.left = (8 + Math.random() * 84) + "%";
-        piece.style.background = colors[i % colors.length];
-        piece.style.setProperty("--confetti-x", ((Math.random() - 0.5) * 320) + "px");
-        piece.style.setProperty("--confetti-rotate", ((Math.random() - 0.5) * 720) + "deg");
-        piece.style.animationDelay = (Math.random() * 0.25) + "s";
-        quiz.appendChild(piece);
-        setTimeout(() => piece.remove(), 1200);
-      }
-    }
-
-    function reveal() {
-      revealed = true;
-      timerRunning = false;
-      clearInterval(timerId);
-      updatePreview();
-      launchConfetti();
-    }
-
-    function openRiddleForm() {
-      $("riddleInput").value = CONFIG.question;
-      $("hint1Input").value = CONFIG.hint;
-      $("hint2Input").value = CONFIG.hint2;
-      $("answerInput").value = CONFIG.answer;
-      $("riddleModal").classList.add("open");
-    }
-
-    function closeRiddleForm() {
-      $("riddleModal").classList.remove("open");
-    }
-
-    $("riddleCard").onclick = (event) => {
-      event.preventDefault();
-      openRiddleForm();
+    const CONFIG = {
+      celebrity: "Celebrity Name",
+      hint1: "Started their career as a child actor.",
+      hint2: "Known for a major role in a popular film.",
+      hint3: "Has received multiple major award nominations.",
+      hint4: "Also works in television and other projects."
     };
-
-    $("cancelRiddle").onclick = closeRiddleForm;
-
-    $("riddleModal").onclick = (event) => {
-      if (event.target === $("riddleModal")) {
-        closeRiddleForm();
-      }
-    };
-
-    $("riddleForm").onsubmit = (event) => {
-      event.preventDefault();
-
-      CONFIG.question = $("riddleInput").value.trim();
-      CONFIG.hint = $("hint1Input").value.trim();
-      CONFIG.hint2 = $("hint2Input").value.trim();
-      CONFIG.answer = $("answerInput").value.trim();
-
-      question = CONFIG.question;
-      answer = CONFIG.answer.toUpperCase();
-
-      resetTimer();
-      closeRiddleForm();
-      updatePreview();
-    };
-
-    $("timer").onclick = () => {
-      if (revealed) {
-        resetTimer();
-      } else if (!timerRunning) {
-        startTimer();
-        updatePreview();
-      }
-    };
-
-    $("fullscreenBtn").onclick = async () => {
-      try {
-        if (!document.fullscreenElement) {
-          await $("quiz").requestFullscreen();
-        } else {
-          await document.exitFullscreen();
-        }
-      } catch (error) {
-        console.warn("Fullscreen is not available:", error);
-      }
-    };
-
-    updatePreview();
   </script>
+
+  <main class="quiz" id="quiz">
+    <div class="quiz-content">
+      <header class="header">
+        <div>
+          <div class="eyebrow">ZEUX TRIVIA</div>
+          <h1 class="title"><span>GUESS</span><span>THE CELEBRITY</span></h1>
+        </div>
+        <button class="fullscreen" id="fullscreenBtn" aria-label="Enter fullscreen">⛶</button>
+      </header>
+
+      <section class="hints" id="hints">
+        <div class="hint revealed" id="hintBox1">
+          <span class="hint-number">01</span>
+          <span class="hint-copy" id="hintText1"></span>
+        </div>
+        <div class="hint locked" id="hintBox2">
+          <span class="hint-number">02</span>
+          <span class="hint-copy" id="hintText2">5</span>
+        </div>
+        <div class="hint locked" id="hintBox3">
+          <span class="hint-number">03</span>
+          <span class="hint-copy" id="hintText3">—</span>
+        </div>
+        <div class="hint locked" id="hintBox4">
+          <span class="hint-number">04</span>
+          <span class="hint-copy" id="hintText4">—</span>
+        </div>
+      </section>
+
+      <div class="bottom">
+        <div class="counter" id="counter">5</div>
+        <div class="tip" id="tip">pause the video if you need more time</div>
+      </div>
+
+      <div class="edit-hint">click the card to edit</div>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modal">
+  <form class="form" id="form">
+    <h2>Edit Celebrity</h2>
+    <div class="field">
+      <label for="celebrityInput">CELEBRITY (NOT SHOWN)</label>
+      <input id="celebrityInput" type="text" required>
+    </div>
+    <div class="field"><label for="hint1Input">HINT 1</label><textarea id="hint1Input" rows="2" required></textarea></div>
+    <div class="field"><label for="hint2Input">HINT 2</label><textarea id="hint2Input" rows="2" required></textarea></div>
+    <div class="field"><label for="hint3Input">HINT 3</label><textarea id="hint3Input" rows="2" required></textarea></div>
+    <div class="field"><label for="hint4Input">HINT 4</label><textarea id="hint4Input" rows="2" required></textarea></div>
+    <div class="actions">
+      <button type="button" class="cancel" id="cancelBtn">CANCEL</button>
+      <button type="submit" class="submit">SAVE</button>
+    </div>
+  </form>
+</div>
+
+<script>
+let elapsed = 0;
+let running = false;
+let timerId = null;
+let finished = false;
+
+const $ = id => document.getElementById(id);
+
+function setHint(box, text, revealed){
+  const copy = box.querySelector(".hint-copy");
+  copy.textContent = text;
+  box.classList.toggle("locked", !revealed);
+  box.classList.toggle("revealed", revealed);
+}
+
+function revealHint(number){
+  const box = $("hintBox" + number);
+  const text = CONFIG["hint" + number];
+  setHint(box, text, true);
+  box.classList.remove("reveal");
+  void box.offsetWidth;
+  box.classList.add("reveal");
+}
+
+function update(){
+  $("hintText1").textContent = CONFIG.hint1;
+
+  if(finished){
+    $("counter").style.display = "none";
+    $("tip").textContent = "check first comment for answer";
+    $("tip").classList.add("final");
+    return;
+  }
+
+  $("counter").textContent = Math.max(0, 5 - (elapsed % 5));
+}
+
+function tick(){
+  elapsed++;
+
+  if(elapsed === 5) revealHint(2);
+  if(elapsed === 10) revealHint(3);
+  if(elapsed === 15) revealHint(4);
+
+  if(elapsed >= 20){
+    finished = true;
+    running = false;
+    clearInterval(timerId);
+  }
+
+  update();
+}
+
+function start(){
+  if(running || finished) return;
+  running = true;
+  update();
+  timerId = setInterval(tick, 1000);
+}
+
+function reset(){
+  clearInterval(timerId);
+  elapsed = 0;
+  running = false;
+  finished = false;
+
+  setHint($("hintBox1"), CONFIG.hint1, true);
+  setHint($("hintBox2"), "5", false);
+  setHint($("hintBox3"), "—", false);
+  setHint($("hintBox4"), "—", false);
+
+  $("counter").style.display = "block";
+  $("tip").textContent = "pause the video if you need more time";
+  $("tip").classList.remove("final");
+  update();
+}
+
+function openModal(){
+  $("celebrityInput").value = CONFIG.celebrity;
+  $("hint1Input").value = CONFIG.hint1;
+  $("hint2Input").value = CONFIG.hint2;
+  $("hint3Input").value = CONFIG.hint3;
+  $("hint4Input").value = CONFIG.hint4;
+  $("modal").classList.add("open");
+}
+
+$("quiz").onclick = event => {
+  if(event.target.closest("#fullscreenBtn")) return;
+  openModal();
+};
+
+$("form").onsubmit = event => {
+  event.preventDefault();
+  CONFIG.celebrity = $("celebrityInput").value.trim();
+  CONFIG.hint1 = $("hint1Input").value.trim();
+  CONFIG.hint2 = $("hint2Input").value.trim();
+  CONFIG.hint3 = $("hint3Input").value.trim();
+  CONFIG.hint4 = $("hint4Input").value.trim();
+  reset();
+  $("modal").classList.remove("open");
+};
+
+$("cancelBtn").onclick = () => $("modal").classList.remove("open");
+
+$("modal").onclick = event => {
+  if(event.target === $("modal")) $("modal").classList.remove("open");
+};
+
+$("fullscreenBtn").onclick = async event => {
+  event.stopPropagation();
+  try{
+    if(!document.fullscreenElement) await $("quiz").requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){ console.warn("Fullscreen unavailable:", e); }
+};
+
+$("quiz").addEventListener("click", event => {
+  if(event.target.closest(".hint")) start();
+});
+
+reset();
+</script>
 </body>
 </html>
